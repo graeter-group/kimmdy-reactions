@@ -58,6 +58,7 @@ def homolysis_files(tmp_path: Path):
     top = Topology(read_top(Path("topol.top")))
     plumed = read_plumed(Path("plumed.dat"))
     distances = read_distances_dat(Path("distances.dat"))
+    distances_avg = read_distances_dat(Path("distances_avg.dat"))
     ffbonded = read_top(Path("ffbonded.itp"))
     edissoc = read_edissoc(Path("edissoc.dat"))
 
@@ -71,6 +72,7 @@ def homolysis_files(tmp_path: Path):
         "top": top,
         "plumed": plumed,
         "distances": distances,
+        "distances_avg": distances_avg,
         "ffbonded": ffbonded,
         "edissoc": edissoc,
     }
@@ -178,6 +180,28 @@ def test_get_recipe_collection(homolysis_files):
         assert len(recipe.timespans[0]) == 2
         for time in recipe.timespans[0]:
             assert type(time) in [float, np.float32, np.float64]
+
+
+def test_homolysis_avg_rates(homolysis_files):
+    config = Config(Path("kimmdy.yml"))
+    rmgr = DummyRunmanager(homolysis_files["top"], config)
+
+    files = DummyFiles()
+    files.input["plumed"] = Path("plumed.dat")
+    files.input["plumed_out"] = Path("distances_avg.dat")
+    files.input["edis"] = Path("edissoc.dat")
+    files.input["itp"] = Path("ffbonded.itp")
+    r = Homolysis(name="homolysis", runmng=rmgr)
+    rc = r.get_recipe_collection(files)
+
+    files.input["plumed_out"] = Path("distances.dat")
+    rc2 = r.get_recipe_collection(files)
+
+    for r1, r2 in zip(rc.recipes, rc2.recipes):
+        assert r1.recipe_steps == r2.recipe_steps
+        assert r1.timespans == r2.timespans
+        assert r1.rates != r2.rates
+
 
 
 ## test hat_naive

@@ -41,7 +41,17 @@ class Homolysis(ReactionPlugin):
         ffbonded = read_top(files.input["itp"])
         edissoc = read_edissoc(files.input["edis"])
 
-        #
+        # handle already averaged distances
+        t0, t1 = distances["time"][0], distances["time"][-1]
+        if t0 == t1:
+            t0 = 0.0
+            if t1 == 0.0:
+                logger.warning(
+                    "First and last time in plumed output = 0.0"
+                    "Check distance input.\n"
+                    "If input is averaged already, set time to end time in ps."
+                )
+
         recipes = []
         for plumedid, dists in distances.items():
             if plumedid == "time":
@@ -67,7 +77,7 @@ class Homolysis(ReactionPlugin):
                         Relax(),
                     ],
                     rates=[*k_avg],
-                    timespans=[(distances["time"][0], distances["time"][-1])],
+                    timespans=[(t0, t1)],
                 )
             )
 
