@@ -17,6 +17,7 @@ import shutil
 from pathlib import Path
 import numpy as np
 from homolysis.reaction import Homolysis
+from kimmdy.plugins import discover_plugins
 from kimmdy.config import Config
 from kimmdy.recipe import Break
 from kimmdy.topology.topology import Topology
@@ -34,6 +35,8 @@ from kimmdy.utils import (
     morse_transition_rate,
 )
 from kimmdy.tasks import TaskFiles
+
+discover_plugins()
 
 
 @dataclass
@@ -58,7 +61,7 @@ def homolysis_files(tmp_path: Path):
     ffbonded = read_top(Path("ffbonded.itp"))
     edissoc = read_edissoc(Path("edissoc.dat"))
 
-    assetsdir = Path(__file__).parents[2] / "tests" / "test_files" / "assets"
+    assetsdir = Path(__file__).parent / "assets"
     Path(tmp_path / "amber99sb-star-ildnp.ff").symlink_to(
         assetsdir / "amber99sb-star-ildnp.ff",
         target_is_directory=True,
@@ -111,7 +114,7 @@ def test_fail_lookup_edissoc(homolysis_files):
     with pytest.raises(
         KeyError, match="Did not find dissociation energy for atomtypes"
     ):
-        e_dis = get_edissoc_from_atomnames(
+        get_edissoc_from_atomnames(
             ["X", "Z"],
             homolysis_files["edissoc"],
         )
@@ -164,11 +167,11 @@ def test_get_recipe_collection(homolysis_files):
     r = Homolysis(name="homolysis", runmng=rmgr)
     rc = r.get_recipe_collection(files)
 
-    plumed = read_plumed(files.input["plumed"])
+    plumed = homolysis_files["plumed"]
     assert len(rc.recipes) == len(plumed["labeled_action"])
     for recipe in rc.recipes:
         assert len(recipe.recipe_steps) == 2
-        assert type(recipe.recipe_steps[0]) == type(Break(1, 2))
+        assert isinstance(recipe.recipe_steps[0], Break)
         assert len(recipe.rates) == 1
         assert type(recipe.rates[0]) in [float, np.float32, np.float64]
         assert len(recipe.timespans) == 1
