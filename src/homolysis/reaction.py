@@ -43,13 +43,19 @@ class Homolysis(ReactionPlugin):
 
         # handle already averaged distances
         t0, t1 = distances["time"][0], distances["time"][-1]
-        if t0 == t1:
+        if len(distances["time"]) == 1:
+            logger.debug("Plumed output contains single line, assuming averaged distance.")
             t0 = 0.0
-            if t1 == 0.0:
+            if t1 < 0.0001:
                 logger.warning(
                     "First and last time in plumed output = 0.0"
                     "Check distance input.\n"
                     "If input is averaged already, set time to end time in ps."
+                )
+        if abs(t1 - t0) < 0.0001:
+                logger.warning(
+                    "First and last time in plumed output equal!"
+                    "Check distance input."
                 )
 
         recipes = []
