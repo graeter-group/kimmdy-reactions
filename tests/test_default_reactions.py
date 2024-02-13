@@ -3,6 +3,7 @@ Tests for default_reactions reaction plugin.
 
 Is skipped if KIMMDY was installed without the plugin.
 """
+
 import pytest
 from kimmdy.runmanager import RunManager
 
@@ -100,7 +101,9 @@ def test_lookup_bondprm(homolysis_files):
 
 
 def test_lookup_edissoc(homolysis_files):
-    e_dis = get_edissoc_from_atomnames(["CA", "C"], homolysis_files["edissoc"])
+    e_dis = get_edissoc_from_atomnames(
+        ["CA", "C"], homolysis_files["edissoc"], residue="GLY"
+    )
     assert abs(e_dis - 341) < 1e-9
 
 
@@ -112,19 +115,22 @@ def test_fail_lookup_bondprm(homolysis_files):
         )
 
 
-def test_fail_lookup_edissoc(homolysis_files):
-    with pytest.raises(
-        KeyError, match="Did not find dissociation energy for atomtypes"
-    ):
-        get_edissoc_from_atomnames(
-            ["X", "Z"],
-            homolysis_files["edissoc"],
-        )
+# lookup can't failt currently
+# def test_fail_lookup_edissoc(homolysis_files):
+#     with pytest.raises(
+#         KeyError, match="Did not find dissociation energy for atomtypes"
+#     ):
+#         get_edissoc_from_atomnames(
+#             ["X", "Z"],
+#             homolysis_files["edissoc"],
+#         )
 
 
 def test_morse_transition_rate(homolysis_files):
     b0, kb = get_bondprm_from_atomtypes(["CT", "C"], homolysis_files["ffbonded"])
-    e_dis = get_edissoc_from_atomnames(["CA", "C"], homolysis_files["edissoc"])
+    e_dis = get_edissoc_from_atomnames(
+        ["CA", "C"], homolysis_files["edissoc"], "general"
+    )
 
     rs_ref = list(np.linspace(0.9, 1.3, 8) * b0)
     ks, fs = morse_transition_rate(rs_ref, b0, e_dis, kb)
@@ -201,7 +207,6 @@ def test_homolysis_avg_rates(homolysis_files):
         assert r1.recipe_steps == r2.recipe_steps
         assert r1.timespans == r2.timespans
         assert r1.rates != r2.rates
-
 
 
 ## test hat_naive
