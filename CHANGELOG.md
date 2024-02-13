@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.2.0...v0.2.1) (2024-02-09)
+
+
+### Bug Fixes
+
+* improved handling of averaged plumed input. ([2132914](https://github.com/hits-mbm-dev/kimmdy-reactions/commit/2132914a949f5e0591e46287aeaea5d61f774a22))
+
 ## [0.2.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.1.1...v0.2.0) (2023-12-19)
 
 
