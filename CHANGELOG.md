@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.2.1...v0.3.0) (2024-02-19)
+
+
+### Features
+
+* trigger release ([f472c07](https://github.com/hits-mbm-dev/kimmdy-reactions/commit/f472c0761e940bb4fb7e35b0bac97a3578984c04))
+
 ## [0.2.1](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.2.0...v0.2.1) (2024-02-09)
 
 
