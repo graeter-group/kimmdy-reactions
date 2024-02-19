@@ -67,7 +67,9 @@ class Homolysis(ReactionPlugin):
             atomnrs = get_atomnrs_from_plumedid(plumedid, plumed)
             atomtypes, atomnames = get_atominfo_from_atomnrs(atomnrs, top)
             b0, kb = get_bondprm_from_atomtypes(atomtypes, ffbonded)
-            E_dis = get_edissoc_from_atomnames(atomnames, edissoc)
+
+            residue = top.atoms[atomnrs[0]].residue
+            E_dis = get_edissoc_from_atomnames(atomnames, edissoc, residue)
 
             # logger.debug(
             #     f"plumedid: {plumedid}, atomids: {atomnrs}, atomtypes: {atomtypes}, b0: {b0}, kb: {kb}, E_dis: {E_dis}"
