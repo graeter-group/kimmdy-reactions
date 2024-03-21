@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.3.0...v0.4.0) (2024-03-21)
+
+
+### Features
+
+* check bound ([4a8829b](https://github.com/hits-mbm-dev/kimmdy-reactions/commit/4a8829bdd48c49fe50f00784d4f2b5a78c18b1c3))
+
+
+### Bug Fixes
+
+* symlink ff before parsing top ([0b61cb3](https://github.com/hits-mbm-dev/kimmdy-reactions/commit/0b61cb3d16d06d80ef6fb33939670e235d86f837))
+
 ## [0.3.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.2.1...v0.3.0) (2024-02-19)
 
 
