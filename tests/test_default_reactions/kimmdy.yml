@@ -24,6 +24,7 @@ reactions:
   homolysis:
     edis: 'edissoc.dat'
     itp: 'ffbonded.itp'
+    check_bound: true
   dummyreaction: {}
 sequence:
   - equilibrium

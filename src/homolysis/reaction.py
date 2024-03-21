@@ -63,8 +63,11 @@ class Homolysis(ReactionPlugin):
         for plumedid, dists in distances.items():
             if plumedid == "time":
                 continue
-            # get from plumedid to b0 and kb of the bond via atomtypes
             atomnrs = get_atomnrs_from_plumedid(plumedid, plumed)
+            if self.config.check_bound:
+                if not atomnrs[1] in top.atoms[atomnrs[0]].bound_to_nrs:
+                    continue
+            # get from plumedid to b0 and kb of the bond via atomtypes
             atomtypes, atomnames = get_atominfo_from_atomnrs(atomnrs, top)
             b0, kb = get_bondprm_from_atomtypes(atomtypes, ffbonded)
 
