@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.4.0...v0.5.0) (2024-03-21)
+
+
+### Features
+
+* make arrhenius equation variables accessible ([dfbca12](https://github.com/hits-mbm-dev/kimmdy-reactions/commit/dfbca121dfce321c93d3ebb166ee91f33358ddb9))
+
 ## [0.4.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.3.0...v0.4.0) (2024-03-21)
 
 
