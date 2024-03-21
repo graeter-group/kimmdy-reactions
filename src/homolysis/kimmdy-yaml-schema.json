@@ -23,7 +23,14 @@
       "pytype": "str",
       "enum": ["rfkmc", "frm", "extrande", "extrande_mod"],
       "default": "rfkmc"
+    },
+    "check_bound": {
+      "type": "boolean",
+      "pytype": "bool",
+      "description": "Check the topology for bonds between plumed atom pairs",
+      "default": false
     }
+
   },
   "required": [ "edis", "itp" ]
 }
