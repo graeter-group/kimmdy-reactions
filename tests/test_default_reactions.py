@@ -56,18 +56,19 @@ def homolysis_files(tmp_path: Path):
     file_dir = Path(__file__).parent / "test_default_reactions"
     shutil.copytree(file_dir, tmp_path, dirs_exist_ok=True)
     os.chdir(tmp_path)
-    top = Topology(read_top(Path("topol.top")))
-    plumed = read_plumed(Path("plumed.dat"))
-    distances = read_distances_dat(Path("distances.dat"))
-    distances_avg = read_distances_dat(Path("distances_avg.dat"))
-    ffbonded = read_top(Path("ffbonded.itp"))
-    edissoc = read_edissoc(Path("edissoc.dat"))
 
     assetsdir = Path(__file__).parent / "assets"
     Path(tmp_path / "amber99sb-star-ildnp.ff").symlink_to(
         assetsdir / "amber99sb-star-ildnp.ff",
         target_is_directory=True,
     )
+
+    top = Topology(read_top(Path("topol.top")))
+    plumed = read_plumed(Path("plumed.dat"))
+    distances = read_distances_dat(Path("distances.dat"))
+    distances_avg = read_distances_dat(Path("distances_avg.dat"))
+    ffbonded = read_top(Path("ffbonded.itp"))
+    edissoc = read_edissoc(Path("edissoc.dat"))
 
     files = {
         "top": top,
