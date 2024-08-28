@@ -24,7 +24,6 @@
       "enum": ["rfkmc", "frm", "extrande", "extrande_mod"],
       "default": "rfkmc"
     },
-
     "check_bound": {
       "type": "boolean",
       "pytype": "bool",
@@ -49,7 +48,7 @@
           "pytype": "float",
           "minimum": 0,
           "default": 300
-        }       
+        }
       },
       "required": [ "frequency_factor", "temperature" ],
       "additionalProperties": false

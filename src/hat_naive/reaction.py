@@ -32,9 +32,9 @@ class NaiveHAT(ReactionPlugin):
         logger.info("Starting naive HAT reaction")
         top = self.runmng.top
 
-        tpr = files.input["tpr"]
+        gro = files.input["gro"]
         trr = files.input["trr"]
-        u = mda.Universe(str(tpr), str(trr), topology_format="tpr", format="trr")
+        u = mda.Universe(str(gro), str(trr))
 
         if not top.radicals:
             radical = find_radical(list(top.atoms.values()))
