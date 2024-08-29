@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1](https://github.com/graeter-group/kimmdy-reactions/compare/v0.5.0...v0.5.1) (2024-08-29)
+
+
+### Bug Fixes
+
+* use correct yaml type for number ([0d7a87b](https://github.com/graeter-group/kimmdy-reactions/commit/0d7a87b0de94aa1b32ee7efd7ea65226c322d55e))
+* use gro instead of tpr refs https://github.com/graeter-group/kimmdy/issues/477 ([2235295](https://github.com/graeter-group/kimmdy-reactions/commit/223529524cf283776842ce10ce934aee2600a18c))
+
 ## [0.5.0](https://github.com/hits-mbm-dev/kimmdy-reactions/compare/v0.4.0...v0.5.0) (2024-03-21)
 
 
