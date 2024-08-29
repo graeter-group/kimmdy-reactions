@@ -36,14 +36,14 @@
       "description": "For setting values in the arrhenius equation",
       "properties": {
         "frequency_factor": {
-          "type": "float",
+          "type": "number",
           "description": "Frequency factor",
           "pytype": "float",
           "minimum": 0,
           "default": 0.288
         },
         "temperature": {
-          "type": "float",
+          "type": "number",
           "description": "Temperature",
           "pytype": "float",
           "minimum": 0,
