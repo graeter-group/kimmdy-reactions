@@ -80,7 +80,9 @@ class Homolysis(ReactionPlugin):
             #     f"plumedid: {plumedid}, atomids: {atomnrs}, atomtypes: {atomtypes}, b0: {b0}, kb: {kb}, E_dis: {E_dis}"
             # )
 
-            k_avg, _ = morse_transition_rate([sum(dists) / len(dists)], b0, E_dis, kb,frequency_factor,temperature)
+            k_avg, _ = morse_transition_rate(
+                [sum(dists) / len(dists)], b0, E_dis, kb, frequency_factor, temperature
+            )
             # averaging distances works here because we typically have
             # one conformational state per calculation
 
