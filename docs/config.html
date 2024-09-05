@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>reaction.dummyreaction – KIMMDY-Reactions</title>
+<title>config – KIMMDY-Reactions</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,7 +113,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">KIMMDY-Reactions</span>
     </a>
   </div>
@@ -90,15 +124,15 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Readme</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../_reference/index.html"> 
+    <a class="nav-link" href="./_reference/index.html"> 
 <span class="menu-text">Reference</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../config.html"> 
+    <a class="nav-link active" href="./config.html" aria-current="page"> 
 <span class="menu-text">Options</span></a>
   </li>  
 </ul>
@@ -138,22 +172,142 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#dummyreaction.reaction.DummyReaction" id="toc-dummyreaction.reaction.DummyReaction" class="nav-link active" data-scroll-target="#dummyreaction.reaction.DummyReaction">reaction.DummyReaction</a></li>
+  <li><a href="#homolysis" id="toc-homolysis" class="nav-link active" data-scroll-target="#homolysis">Homolysis</a>
+  <ul>
+  <li><a href="#edis" id="toc-edis" class="nav-link" data-scroll-target="#edis">edis</a></li>
+  <li><a href="#itp" id="toc-itp" class="nav-link" data-scroll-target="#itp">itp</a></li>
+  <li><a href="#kmc" id="toc-kmc" class="nav-link" data-scroll-target="#kmc">kmc</a></li>
+  <li><a href="#check_bound" id="toc-check_bound" class="nav-link" data-scroll-target="#check_bound">check_bound</a></li>
+  <li><a href="#arrhenius_equation" id="toc-arrhenius_equation" class="nav-link" data-scroll-target="#arrhenius_equation">arrhenius_equation</a></li>
+  </ul></li>
+  <li><a href="#dummy-reaction" id="toc-dummy-reaction" class="nav-link" data-scroll-target="#dummy-reaction">Dummy Reaction</a>
+  <ul>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">example</a></li>
+  <li><a href="#example2" id="toc-example2" class="nav-link" data-scroll-target="#example2">example2</a></li>
+  <li><a href="#kmc-1" id="toc-kmc-1" class="nav-link" data-scroll-target="#kmc-1">kmc</a></li>
+  </ul></li>
+  <li><a href="#naive-hat" id="toc-naive-hat" class="nav-link" data-scroll-target="#naive-hat">Naive HAT</a>
+  <ul>
+  <li><a href="#frequency_factor" id="toc-frequency_factor" class="nav-link" data-scroll-target="#frequency_factor">frequency_factor</a></li>
+  <li><a href="#h_cutoff" id="toc-h_cutoff" class="nav-link" data-scroll-target="#h_cutoff">h_cutoff</a></li>
+  <li><a href="#polling_rate" id="toc-polling_rate" class="nav-link" data-scroll-target="#polling_rate">polling_rate</a></li>
+  <li><a href="#kmc-2" id="toc-kmc-2" class="nav-link" data-scroll-target="#kmc-2">kmc</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/graeter-group/kimmdy-reactions/edit/main/_reference/reaction.DummyReaction.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/graeter-group/kimmdy-reactions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/graeter-group/kimmdy-reactions/edit/main/config.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/graeter-group/kimmdy-reactions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">All Options</h1>
+</div>
 
 
 
-<section id="dummyreaction.reaction.DummyReaction" class="level1">
-<h1>reaction.DummyReaction</h1>
-<p><code>reaction.DummyReaction()</code></p>
-<p>Dummy reaction, returns empty RecipeCollection</p>
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<p>For all KIMMDY options see <a href="https://graeter-group.github.io/kimmdy/guide/references/input.html#all-options">here</a>.</p>
+<section id="homolysis" class="level2">
+<h2 class="anchored" data-anchor-id="homolysis">Homolysis</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reactions</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">homolysis</span><span class="kw">:</span><span class="at"> ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="edis" class="level3">
+<h3 class="anchored" data-anchor-id="edis">edis</h3>
+<p>Dissociation energies data file</p>
+<p><strong>Type</strong>: Path</p>
+<p><strong>Default</strong>: edissoc.dat</p>
+</section>
+<section id="itp" class="level3">
+<h3 class="anchored" data-anchor-id="itp">itp</h3>
+<p>Additional itp file with bonded parameters</p>
+<p><strong>Type</strong>: Path</p>
+<p><strong>Default</strong>: ffbonded.itp</p>
+</section>
+<section id="kmc" class="level3">
+<h3 class="anchored" data-anchor-id="kmc">kmc</h3>
+<p>KMC algorithm for this reaction.</p>
+<p><strong>Type</strong>: str</p>
+<p><strong>Options</strong>: [‘rfkmc’, ‘frm’, ‘extrande’, ‘extrande_mod’]</p>
+<p><strong>Default</strong>: rfkmc</p>
+</section>
+<section id="check_bound" class="level3">
+<h3 class="anchored" data-anchor-id="check_bound">check_bound</h3>
+<p>Check the topology for bonds between plumed atom pairs</p>
+<p><strong>Type</strong>: bool</p>
+<p><strong>Default</strong>: False</p>
+</section>
+<section id="arrhenius_equation" class="level3">
+<h3 class="anchored" data-anchor-id="arrhenius_equation">arrhenius_equation</h3>
+<p>For setting values in the arrhenius equation</p>
+</section>
+</section>
+<section id="dummy-reaction" class="level2">
+<h2 class="anchored" data-anchor-id="dummy-reaction">Dummy Reaction</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reactions</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dummyreaction</span><span class="kw">:</span><span class="at"> ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">example</h3>
+<p>This is an example of an option for a reaction.</p>
+<p><strong>Type</strong>: float</p>
+<p><strong>Default</strong>: 0.0</p>
+</section>
+<section id="example2" class="level3">
+<h3 class="anchored" data-anchor-id="example2">example2</h3>
+<p>This is another example of an option for a reaction.</p>
+<p><strong>Type</strong>: str</p>
+<p><strong>Default</strong>: hello</p>
+</section>
+<section id="kmc-1" class="level3">
+<h3 class="anchored" data-anchor-id="kmc-1">kmc</h3>
+<p>KMC algorithm for this reaction.</p>
+<p><strong>Type</strong>: str</p>
+<p><strong>Options</strong>: [‘rfkmc’, ‘frm’, ‘extrande’, ‘extrande_mod’]</p>
+<p><strong>Default</strong>: extrande_mod</p>
+</section>
+</section>
+<section id="naive-hat" class="level2">
+<h2 class="anchored" data-anchor-id="naive-hat">Naive HAT</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reactions</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">hat_naive</span><span class="kw">:</span><span class="at"> ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="frequency_factor" class="level3">
+<h3 class="anchored" data-anchor-id="frequency_factor">frequency_factor</h3>
+<p>Frequency factor</p>
+<p><strong>Type</strong>: float</p>
+<p><strong>Default</strong>: 1</p>
+</section>
+<section id="h_cutoff" class="level3">
+<h3 class="anchored" data-anchor-id="h_cutoff">h_cutoff</h3>
+<p>Cutoff for H atom</p>
+<p><strong>Type</strong>: float</p>
+<p><strong>Default</strong>: 4</p>
+</section>
+<section id="polling_rate" class="level3">
+<h3 class="anchored" data-anchor-id="polling_rate">polling_rate</h3>
+<p>Polling rate</p>
+<p><strong>Type</strong>: float</p>
+<p><strong>Default</strong>: 1</p>
+</section>
+<section id="kmc-2" class="level3">
+<h3 class="anchored" data-anchor-id="kmc-2">kmc</h3>
+<p>KMC algorithm for this reaction.</p>
+<p><strong>Type</strong>: str</p>
+<p><strong>Options</strong>: [‘rfkmc’, ‘frm’, ‘extrande’, ‘extrande_mod’]</p>
+<p><strong>Default</strong>: extrande_mod</p>
+
+
+</section>
 </section>
 
 <a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
@@ -726,4 +880,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/graeter-group/kimmdy-reactions/edit/main/_reference/reaction.DummyReaction.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/graeter-group/kimmdy-reactions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/graeter-group/kimmdy-reactions/edit/main/config.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/graeter-group/kimmdy-reactions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

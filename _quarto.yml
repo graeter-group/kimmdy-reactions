@@ -5,7 +5,7 @@ project:
   render:
     - index.qmd
     - _reference
-
+    - config.qmd
 
 website:
   page-navigation: true
@@ -24,8 +24,12 @@ website:
           - text: Report a Bug
             url:  https://github.com/graeter-group/kimmdy-reactions/issues/new
     left:
+      - file: index.qmd
+        text: Readme
       - file: _reference/index.qmd
         text: Reference
+      - file: config.qmd
+        text: Options
 
 metadata-files:
   - _sidebar.yml
@@ -60,6 +64,9 @@ interlinks:
       url: https://numpy.org/doc/stable/
     python:
       url: https://docs.python.org/3.10/
+    kimmdy:
+      url: https://graeter-group.github.io/kimmdy/
+      inv: objects.txt
 
 quartodoc:
   sidebar: "_sidebar.yml"

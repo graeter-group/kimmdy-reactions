@@ -4,7 +4,8 @@
 
 ## Documentation
 
-See [KIMMDY documentation](https://graeter-group.github.io/kimmdy/).
+See [KIMMDY documentation](https://graeter-group.github.io/kimmdy/)
+and [documentation for these reactions](https://graeter-group.github.io/kimmdy-reactions/).
 
 ## Installation
 

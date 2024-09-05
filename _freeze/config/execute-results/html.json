@@ -1,0 +1,12 @@
+{
+  "hash": "80e294a73e06e47b40b43cfdbb332c36",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: All Options\n---\n\n\n\nFor all KIMMDY options see [here](https://graeter-group.github.io/kimmdy/guide/references/input.html#all-options).\n\n\n\n\n## Homolysis\n\n```yaml\nreactions:\n  homolysis: ...\n```\n\n### edis\n\nDissociation energies data file\n\n\n**Type**: Path\n\n\n**Default**: edissoc.dat\n\n\n### itp\n\nAdditional itp file with bonded parameters\n\n\n**Type**: Path\n\n\n**Default**: ffbonded.itp\n\n\n### kmc\n\nKMC algorithm for this reaction.\n\n\n**Type**: str\n\n\n**Options**: ['rfkmc', 'frm', 'extrande', 'extrande_mod']\n\n\n**Default**: rfkmc\n\n\n### check_bound\n\nCheck the topology for bonds between plumed atom pairs\n\n\n**Type**: bool\n\n\n**Default**: False\n\n\n### arrhenius_equation\n\nFor setting values in the arrhenius equation\n\n\n\n\n## Dummy Reaction\n\n```yaml\nreactions:\n  dummyreaction: ...\n```\n\n### example\n\nThis is an example of an option for a reaction.\n\n\n**Type**: float\n\n\n**Default**: 0.0\n\n\n### example2\n\nThis is another example of an option for a reaction.\n\n\n**Type**: str\n\n\n**Default**: hello\n\n\n### kmc\n\nKMC algorithm for this reaction.\n\n\n**Type**: str\n\n\n**Options**: ['rfkmc', 'frm', 'extrande', 'extrande_mod']\n\n\n**Default**: extrande_mod\n\n\n\n\n## Naive HAT\n\n```yaml\nreactions:\n  hat_naive: ...\n```\n\n### frequency_factor\n\nFrequency factor\n\n\n**Type**: float\n\n\n**Default**: 1\n\n\n### h_cutoff\n\nCutoff for H atom\n\n\n**Type**: float\n\n\n**Default**: 4\n\n\n### polling_rate\n\nPolling rate\n\n\n**Type**: float\n\n\n**Default**: 1\n\n\n### kmc\n\nKMC algorithm for this reaction.\n\n\n**Type**: str\n\n\n**Options**: ['rfkmc', 'frm', 'extrande', 'extrande_mod']\n\n\n**Default**: extrande_mod\n\n\n\n\n",
+    "supporting": [
+      "config_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

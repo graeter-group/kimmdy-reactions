@@ -31,87 +31,32 @@
     "text": "reaction.NaiveHAT\nreaction.NaiveHAT()\nNaive HAT reaction, selects hydrogens at random\n\n\n\n\n Back to top"
   },
   {
-    "objectID": "_reference/hat_naive.reaction.html",
-    "href": "_reference/hat_naive.reaction.html",
-    "title": "hat_naive.reaction",
+    "objectID": "config.html",
+    "href": "config.html",
+    "title": "All Options",
     "section": "",
-    "text": "reaction\n\n\n\n\n\nName\nDescription\n\n\n\n\nNaiveHAT\nNaive HAT reaction, selects hydrogens at random\n\n\n\n\n\nreaction.NaiveHAT()\nNaive HAT reaction, selects hydrogens at random",
-    "crumbs": [
-      "Reference",
-      "Naive HAT",
-      "hat_naive.reaction"
-    ]
+    "text": "For all KIMMDY options see here."
   },
   {
-    "objectID": "_reference/hat_naive.reaction.html#classes",
-    "href": "_reference/hat_naive.reaction.html#classes",
-    "title": "hat_naive.reaction",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nNaiveHAT\nNaive HAT reaction, selects hydrogens at random\n\n\n\n\n\nreaction.NaiveHAT()\nNaive HAT reaction, selects hydrogens at random",
-    "crumbs": [
-      "Reference",
-      "Naive HAT",
-      "hat_naive.reaction"
-    ]
+    "objectID": "config.html#homolysis",
+    "href": "config.html#homolysis",
+    "title": "All Options",
+    "section": "Homolysis",
+    "text": "Homolysis\nreactions:\n  homolysis: ...\n\nedis\nDissociation energies data file\nType: Path\nDefault: edissoc.dat\n\n\nitp\nAdditional itp file with bonded parameters\nType: Path\nDefault: ffbonded.itp\n\n\nkmc\nKMC algorithm for this reaction.\nType: str\nOptions: [‘rfkmc’, ‘frm’, ‘extrande’, ‘extrande_mod’]\nDefault: rfkmc\n\n\ncheck_bound\nCheck the topology for bonds between plumed atom pairs\nType: bool\nDefault: False\n\n\narrhenius_equation\nFor setting values in the arrhenius equation"
   },
   {
-    "objectID": "_reference/reaction.DummyReaction.html",
-    "href": "_reference/reaction.DummyReaction.html",
-    "title": "reaction.DummyReaction",
-    "section": "",
-    "text": "reaction.DummyReaction\nreaction.DummyReaction()\nDummy reaction, returns empty RecipeCollection\n\n\n\n\n Back to top"
+    "objectID": "config.html#dummy-reaction",
+    "href": "config.html#dummy-reaction",
+    "title": "All Options",
+    "section": "Dummy Reaction",
+    "text": "Dummy Reaction\nreactions:\n  dummyreaction: ...\n\nexample\nThis is an example of an option for a reaction.\nType: float\nDefault: 0.0\n\n\nexample2\nThis is another example of an option for a reaction.\nType: str\nDefault: hello\n\n\nkmc\nKMC algorithm for this reaction.\nType: str\nOptions: [‘rfkmc’, ‘frm’, ‘extrande’, ‘extrande_mod’]\nDefault: extrande_mod"
   },
   {
-    "objectID": "_reference/homolysis.reaction.html",
-    "href": "_reference/homolysis.reaction.html",
-    "title": "homolysis.reaction",
-    "section": "",
-    "text": "reaction\n\n\n\n\n\nName\nDescription\n\n\n\n\nHomolysis\nHomolytic bond breaking leading to 2 radicals.\n\n\n\n\n\nreaction.Homolysis()\nHomolytic bond breaking leading to 2 radicals. Implementation for time-varying rates",
-    "crumbs": [
-      "Reference",
-      "Homolysis",
-      "homolysis.reaction"
-    ]
-  },
-  {
-    "objectID": "_reference/homolysis.reaction.html#classes",
-    "href": "_reference/homolysis.reaction.html#classes",
-    "title": "homolysis.reaction",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nHomolysis\nHomolytic bond breaking leading to 2 radicals.\n\n\n\n\n\nreaction.Homolysis()\nHomolytic bond breaking leading to 2 radicals. Implementation for time-varying rates",
-    "crumbs": [
-      "Reference",
-      "Homolysis",
-      "homolysis.reaction"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "A collection of simple reactions for KIMMDY",
-    "section": "",
-    "text": "test latest release\n\n\n\n\nSee KIMMDY documentation.\n\n\n\nTogether with KIMMDY\npip installl kimmdy[reactions]\nTo install it separatly:\npip install kimmdy-reactions\n\n\n\n\nImplement your reaction as a subclass of kimmdy.reaction.Reaction\nRegister your Reaction class in the [options.entry_points] section in the setup.cfg. The name you give here must match the entry in the config.yml for Kimmdy!"
-  },
-  {
-    "objectID": "index.html#documentation",
-    "href": "index.html#documentation",
-    "title": "A collection of simple reactions for KIMMDY",
-    "section": "",
-    "text": "See KIMMDY documentation."
-  },
-  {
-    "objectID": "index.html#installation",
-    "href": "index.html#installation",
-    "title": "A collection of simple reactions for KIMMDY",
-    "section": "",
-    "text": "Together with KIMMDY\npip installl kimmdy[reactions]\nTo install it separatly:\npip install kimmdy-reactions"
-  },
-  {
-    "objectID": "index.html#making-your-own",
-    "href": "index.html#making-your-own",
-    "title": "A collection of simple reactions for KIMMDY",
-    "section": "",
-    "text": "Implement your reaction as a subclass of kimmdy.reaction.Reaction\nRegister your Reaction class in the [options.entry_points] section in the setup.cfg. The name you give here must match the entry in the config.yml for Kimmdy!"
+    "objectID": "config.html#naive-hat",
+    "href": "config.html#naive-hat",
+    "title": "All Options",
+    "section": "Naive HAT",
+    "text": "Naive HAT\nreactions:\n  hat_naive: ...\n\nfrequency_factor\nFrequency factor\nType: float\nDefault: 1\n\n\nh_cutoff\nCutoff for H atom\nType: float\nDefault: 4\n\n\npolling_rate\nPolling rate\nType: float\nDefault: 1\n\n\nkmc\nKMC algorithm for this reaction.\nType: str\nOptions: [‘rfkmc’, ‘frm’, ‘extrande’, ‘extrande_mod’]\nDefault: extrande_mod"
   },
   {
     "objectID": "_reference/index.html",
@@ -155,6 +100,89 @@
     "crumbs": [
       "Reference",
       "References"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "A collection of simple reactions for KIMMDY",
+    "section": "",
+    "text": "test latest release\n\n\n\n\nSee KIMMDY documentation and documentation for these reactions.\n\n\n\nTogether with KIMMDY\npip installl kimmdy[reactions]\nTo install it separatly:\npip install kimmdy-reactions\n\n\n\n\nImplement your reaction as a subclass of kimmdy.reaction.Reaction\nRegister your Reaction class in the [options.entry_points] section in the setup.cfg. The name you give here must match the entry in the config.yml for Kimmdy!"
+  },
+  {
+    "objectID": "index.html#documentation",
+    "href": "index.html#documentation",
+    "title": "A collection of simple reactions for KIMMDY",
+    "section": "",
+    "text": "See KIMMDY documentation and documentation for these reactions."
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "A collection of simple reactions for KIMMDY",
+    "section": "",
+    "text": "Together with KIMMDY\npip installl kimmdy[reactions]\nTo install it separatly:\npip install kimmdy-reactions"
+  },
+  {
+    "objectID": "index.html#making-your-own",
+    "href": "index.html#making-your-own",
+    "title": "A collection of simple reactions for KIMMDY",
+    "section": "",
+    "text": "Implement your reaction as a subclass of kimmdy.reaction.Reaction\nRegister your Reaction class in the [options.entry_points] section in the setup.cfg. The name you give here must match the entry in the config.yml for Kimmdy!"
+  },
+  {
+    "objectID": "_reference/homolysis.reaction.html",
+    "href": "_reference/homolysis.reaction.html",
+    "title": "homolysis.reaction",
+    "section": "",
+    "text": "reaction\n\n\n\n\n\nName\nDescription\n\n\n\n\nHomolysis\nHomolytic bond breaking leading to 2 radicals.\n\n\n\n\n\nreaction.Homolysis()\nHomolytic bond breaking leading to 2 radicals. Implementation for time-varying rates",
+    "crumbs": [
+      "Reference",
+      "Homolysis",
+      "homolysis.reaction"
+    ]
+  },
+  {
+    "objectID": "_reference/homolysis.reaction.html#classes",
+    "href": "_reference/homolysis.reaction.html#classes",
+    "title": "homolysis.reaction",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nHomolysis\nHomolytic bond breaking leading to 2 radicals.\n\n\n\n\n\nreaction.Homolysis()\nHomolytic bond breaking leading to 2 radicals. Implementation for time-varying rates",
+    "crumbs": [
+      "Reference",
+      "Homolysis",
+      "homolysis.reaction"
+    ]
+  },
+  {
+    "objectID": "_reference/reaction.DummyReaction.html",
+    "href": "_reference/reaction.DummyReaction.html",
+    "title": "reaction.DummyReaction",
+    "section": "",
+    "text": "reaction.DummyReaction\nreaction.DummyReaction()\nDummy reaction, returns empty RecipeCollection\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "_reference/hat_naive.reaction.html",
+    "href": "_reference/hat_naive.reaction.html",
+    "title": "hat_naive.reaction",
+    "section": "",
+    "text": "reaction\n\n\n\n\n\nName\nDescription\n\n\n\n\nNaiveHAT\nNaive HAT reaction, selects hydrogens at random\n\n\n\n\n\nreaction.NaiveHAT()\nNaive HAT reaction, selects hydrogens at random",
+    "crumbs": [
+      "Reference",
+      "Naive HAT",
+      "hat_naive.reaction"
+    ]
+  },
+  {
+    "objectID": "_reference/hat_naive.reaction.html#classes",
+    "href": "_reference/hat_naive.reaction.html#classes",
+    "title": "hat_naive.reaction",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nNaiveHAT\nNaive HAT reaction, selects hydrogens at random\n\n\n\n\n\nreaction.NaiveHAT()\nNaive HAT reaction, selects hydrogens at random",
+    "crumbs": [
+      "Reference",
+      "Naive HAT",
+      "hat_naive.reaction"
     ]
   },
   {
