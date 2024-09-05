@@ -1,0 +1,80 @@
+project:
+  title: KIMMDY-Reactions
+  type: website
+  output-dir: docs
+  render:
+    - index.qmd
+    - _reference
+
+
+website:
+  page-navigation: true
+  site-url: http://graeter-group.github.io/kimmdy-reactions
+  repo-url: https://github.com/graeter-group/kimmdy-reactions
+  repo-actions: [edit, issue]
+  reader-mode: true
+  back-to-top-navigation: true
+  navbar:
+    background: light
+    tools:
+      - icon: github
+        menu:
+          - text: Source Code
+            url:  https://github.com/graeter-group/kimmdy-reactions
+          - text: Report a Bug
+            url:  https://github.com/graeter-group/kimmdy-reactions/issues/new
+    left:
+      - file: _reference/index.qmd
+        text: Reference
+
+metadata-files:
+  - _sidebar.yml
+
+execute:
+  warning: false
+  echo: true
+  freeze: auto
+
+format:
+  html:
+    toc: true
+    toc-depth: 5
+    toc-expand: true
+    mainfont: Roboto
+    number-depth: 0
+    highlight-style: arrow
+    theme:
+      light:
+      - www/theme.scss
+      dark:
+      - www/theme.scss
+      - www/theme-dark.scss
+    code-copy: true
+
+filters:
+  - interlinks
+
+interlinks:
+  sources:
+    numpy:
+      url: https://numpy.org/doc/stable/
+    python:
+      url: https://docs.python.org/3.10/
+
+quartodoc:
+  sidebar: "_sidebar.yml"
+  render_interlinks: true
+  title: "References"
+  style: pkgdown
+  package: null
+  dir: _reference
+  sections:
+    - title: Homolysis
+      contents:
+        - homolysis.reaction
+    - title: Naive HAT
+      contents:
+        - hat_naive.reaction
+    - title: Dummyreaction
+      contents:
+        - dummyreaction.reaction

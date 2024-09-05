@@ -1,0 +1,15 @@
+website:
+  sidebar:
+  - contents:
+    - _reference/index.qmd
+    - contents:
+      - _reference/homolysis.reaction.qmd
+      section: Homolysis
+    - contents:
+      - _reference/hat_naive.reaction.qmd
+      section: Naive HAT
+    - contents:
+      - _reference/dummyreaction.reaction.qmd
+      section: Dummyreaction
+    id: _reference
+  - id: dummy-sidebar

@@ -1,0 +1,18 @@
+# homolysis.reaction { #homolysis.reaction }
+
+`reaction`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [Homolysis](#homolysis.reaction.Homolysis) | Homolytic bond breaking leading to 2 radicals. |
+
+### Homolysis { #homolysis.reaction.Homolysis }
+
+`reaction.Homolysis()`
+
+Homolytic bond breaking leading to 2 radicals.
+Implementation for time-varying rates

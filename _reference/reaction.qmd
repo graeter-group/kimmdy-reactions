@@ -1,0 +1,17 @@
+# reaction { #dummyreaction.reaction }
+
+`reaction`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DummyReaction](#dummyreaction.reaction.DummyReaction) | Dummy reaction, returns empty RecipeCollection |
+
+### DummyReaction { #dummyreaction.reaction.DummyReaction }
+
+`reaction.DummyReaction()`
+
+Dummy reaction, returns empty RecipeCollection
