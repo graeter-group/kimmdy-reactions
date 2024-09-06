@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/graeter-group/kimmdy-reactions/compare/v0.5.1...v0.6.0) (2024-09-06)
+
+
+### Features
+
+* update gh actions workflows and add docs [#11](https://github.com/graeter-group/kimmdy-reactions/issues/11) ([6f125a1](https://github.com/graeter-group/kimmdy-reactions/commit/6f125a10c3c070bb50e58d32cf4354cec1ac26b2))
+
+
+### Documentation
+
+* add docs ([9ba49b5](https://github.com/graeter-group/kimmdy-reactions/commit/9ba49b5241440b931db9588fb351ac921cbb429f))
+
 ## [0.5.1](https://github.com/graeter-group/kimmdy-reactions/compare/v0.5.0...v0.5.1) (2024-08-29)
 
 
