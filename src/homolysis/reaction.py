@@ -62,6 +62,7 @@ class Homolysis(ReactionPlugin):
             )
 
         recipes = []
+        e_dis_d = {}
         for plumedid, dists in distances.items():
             if plumedid == "time":
                 continue
@@ -74,14 +75,13 @@ class Homolysis(ReactionPlugin):
             b0, kb = get_bondprm_from_atomtypes(atomtypes, ffbonded)
 
             residue = top.atoms[atomnrs[0]].residue
-            E_dis = get_edissoc_from_atomnames(atomnames, edissoc, residue)
 
-            # logger.debug(
-            #     f"plumedid: {plumedid}, atomids: {atomnrs}, atomtypes: {atomtypes}, b0: {b0}, kb: {kb}, E_dis: {E_dis}"
-            # )
+            if not (e_dis := e_dis_d.get("".join(atomnames+[residue]))):
+                e_dis = get_edissoc_from_atomnames(atomnames, edissoc, residue)
+                e_dis_d["".join(atomnames+[residue])] = e_dis
 
             k_avg, _ = morse_transition_rate(
-                [sum(dists) / len(dists)], b0, E_dis, kb, frequency_factor, temperature
+                [sum(dists) / len(dists)], b0, e_dis, kb, frequency_factor, temperature
             )
             # averaging distances works here because we typically have
             # one conformational state per calculation
