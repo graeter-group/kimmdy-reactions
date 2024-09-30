@@ -21,7 +21,7 @@
       "description": "KMC algorithm for this reaction.",
       "type": "string",
       "pytype": "str",
-      "enum": ["rfkmc", "frm", "extrande", "extrande_mod"],
+      "enum": ["rfkmc", "frm", "extrande", "extrande_mod", "multi_rfkmc"],
       "default": "rfkmc"
     },
     "check_bound": {
