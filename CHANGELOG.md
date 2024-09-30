@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1](https://github.com/graeter-group/kimmdy-reactions/compare/v0.6.0...v0.6.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* allow multi rfkmc in config ([421ea77](https://github.com/graeter-group/kimmdy-reactions/commit/421ea77e8a91114c3d11026399ca54b8c0ba562c))
+* log each missing edissoc entry only once by caching the results ([1b26864](https://github.com/graeter-group/kimmdy-reactions/commit/1b26864397e8c6744e5d464fc930f94fd39a6c6a))
+
 ## [0.6.0](https://github.com/graeter-group/kimmdy-reactions/compare/v0.5.1...v0.6.0) (2024-09-06)
 
 
