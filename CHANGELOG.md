@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.0...v0.7.1) (2025-01-23)
+
+
+### Bug Fixes
+
+* gh actions ([dbe3e2c](https://github.com/graeter-group/kimmdy-reactions/commit/dbe3e2cc93a17b8731776090c1d2cb8960ec7021))
+* trigger release ([74f5116](https://github.com/graeter-group/kimmdy-reactions/commit/74f5116cd6cb794a311f1b6b7da2f4e4ec2b1998))
+
 ## [0.7.0](https://github.com/graeter-group/kimmdy-reactions/compare/v0.6.0...v0.7.0) (2025-01-23)
 
 
