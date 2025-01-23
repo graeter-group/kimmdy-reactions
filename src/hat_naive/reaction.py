@@ -25,7 +25,7 @@ def find_radical(atoms: list[Atom]):
 
 
 class NaiveHAT(ReactionPlugin):
-    """Naive HAT reaction, selects hydrogens at random"""
+    """Naive HAT reaction, selects all neighboring hydrogens and assigns random rates."""
 
     def get_recipe_collection(self, files) -> RecipeCollection:
         logger = files.logger
@@ -41,14 +41,10 @@ class NaiveHAT(ReactionPlugin):
             if radical:
                 top.radicals[radical.nr] = radical
 
-        # empty recipe that does nothing as a fallback
-        recipe = Recipe(
-            recipe_steps=[RecipeStep()],
-            rates=[1],
-            timespans=[(u.trajectory[0].time, u.trajectory[-1].time)],
-        )
-        if top.radicals:
-            for rad in rng.sample(list(top.radicals.values()), len(top.radicals)):
+        full_timespan = (u.trajectory[0].time, u.trajectory[-1].time)
+        recipes = []
+        if len(top.radicals) > 0:
+            for rad in top.radicals.values():
                 hs = []
                 froms = []
                 for nr in rad.bound_to_nrs:
@@ -60,25 +56,33 @@ class NaiveHAT(ReactionPlugin):
                             hs.append(atom2.nr)
                 if len(hs) == 0:
                     continue
-                i = rng.randint(0, len(hs) - 1)
                 r = rad.nr
-                h = hs[i]
-                f = froms[i]
-                logger.debug(f"radical: {rad}")
-                logger.debug(f"h: {top.atoms[h]}")
-                logger.debug(f"from: {top.atoms[f]}")
-                # int(x) - 1 to be zero based because h,f,r are from topology
+                for h, f in zip(hs, froms):
+                    rate = rng.random()
+                    logger.debug(f"radical: {rad}")
+                    logger.debug(f"h: {top.atoms[h]}")
+                    logger.debug(f"from: {top.atoms[f]}")
+                    # int(x) - 1 to be zero based because h,f,r are from topology
+                    recipe = Recipe(
+                        recipe_steps=[
+                            Break(atom_id_1=f, atom_id_2=h),
+                            Bind(atom_id_1=h, atom_id_2=r),
+                            Relax(),
+                        ],
+                        rates=[rate],
+                        timespans=[full_timespan],
+                    )
+                    recipes.append(recipe)
+
+            if len(recipes) == 0:
+                # empty recipe that does nothing as a fallback
                 recipe = Recipe(
-                    recipe_steps=[
-                        Break(atom_id_1=f, atom_id_2=h),
-                        Bind(atom_id_1=h, atom_id_2=r),
-                        Relax(),
-                    ],
+                    recipe_steps=[RecipeStep()],
                     rates=[1],
                     timespans=[(u.trajectory[0].time, u.trajectory[-1].time)],
                 )
-                break
+                recipes.append(recipe)
 
-            return RecipeCollection([recipe])
+            return RecipeCollection(recipes)
 
         return RecipeCollection([])
