@@ -76,9 +76,9 @@ class Homolysis(ReactionPlugin):
 
             residue = top.atoms[atomnrs[0]].residue
 
-            if not (e_dis := e_dis_d.get("".join(atomnames+[residue]))):
+            if not (e_dis := e_dis_d.get("".join(atomnames + [residue]))):
                 e_dis = get_edissoc_from_atomnames(atomnames, edissoc, residue)
-                e_dis_d["".join(atomnames+[residue])] = e_dis
+                e_dis_d["".join(atomnames + [residue])] = e_dis
 
             k_avg, _ = morse_transition_rate(
                 [sum(dists) / len(dists)], b0, e_dis, kb, frequency_factor, temperature
