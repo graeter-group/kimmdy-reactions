@@ -41,7 +41,9 @@ class NaiveHAT(ReactionPlugin):
             if radical:
                 top.radicals[radical.nr] = radical
 
-        full_timespan = (u.trajectory[0].time, u.trajectory[-1].time)
+        t1 = u.trajectory[0].time
+        t2 = u.trajectory[-1].time
+        full_timespan = (t1, t2)
         recipes = []
         if len(top.radicals) > 0:
             for rad in top.radicals.values():
@@ -79,7 +81,7 @@ class NaiveHAT(ReactionPlugin):
                 recipe = Recipe(
                     recipe_steps=[RecipeStep()],
                     rates=[1],
-                    timespans=[(u.trajectory[0].time, u.trajectory[-1].time)],
+                    timespans=[(full_timespan)],
                 )
                 recipes.append(recipe)
 
