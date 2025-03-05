@@ -1,5 +1,4 @@
-"""Example useage of installed plugins.
-"""
+"""Example useage of installed plugins."""
 
 import sys
 from importlib.metadata import entry_points
