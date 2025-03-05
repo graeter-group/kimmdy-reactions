@@ -81,7 +81,7 @@ class NaiveHAT(ReactionPlugin):
                 recipe = Recipe(
                     recipe_steps=[RecipeStep()],
                     rates=[1],
-                    timespans=[(full_timespan)],
+                    timespans=[full_timespan],
                 )
                 recipes.append(recipe)
 
