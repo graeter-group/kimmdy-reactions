@@ -8,10 +8,12 @@
 
 | Name | Description |
 | --- | --- |
-| [NaiveHAT](#hat_naive.reaction.NaiveHAT) | Naive HAT reaction, selects hydrogens at random |
+| [NaiveHAT](#hat_naive.reaction.NaiveHAT) | Naive HAT reaction, selects all neighboring hydrogens and assigns random rates. |
 
 ### NaiveHAT { #hat_naive.reaction.NaiveHAT }
 
-`reaction.NaiveHAT()`
+```python
+reaction.NaiveHAT()
+```
 
-Naive HAT reaction, selects hydrogens at random
+Naive HAT reaction, selects all neighboring hydrogens and assigns random rates.
