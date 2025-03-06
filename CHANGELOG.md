@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.3...v0.7.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* trigger release to build docs on release branch ([00bc193](https://github.com/graeter-group/kimmdy-reactions/commit/00bc193a947eb023236bdeb43c1e73aa881c0c57))
+
 ## [0.7.3](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.2...v0.7.3) (2025-03-06)
 
 
