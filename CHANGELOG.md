@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.4](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.3...v0.7.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* trigger release to build docs on release branch ([00bc193](https://github.com/graeter-group/kimmdy-reactions/commit/00bc193a947eb023236bdeb43c1e73aa881c0c57))
+
+## [0.7.3](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.2...v0.7.3) (2025-03-06)
+
+
+### Bug Fixes
+
+* **ci:** fix publishing trigger ([#20](https://github.com/graeter-group/kimmdy-reactions/issues/20)) ([daa854a](https://github.com/graeter-group/kimmdy-reactions/commit/daa854a89297a57a3e837259b30c197a8ff2f33c))
+
+## [0.7.2](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.1...v0.7.2) (2025-03-05)
+
+
+### Bug Fixes
+
+* circumvent mda trajectory frame reference issue ([0b2b479](https://github.com/graeter-group/kimmdy-reactions/commit/0b2b4791ef2498a1124695c63312e6b119a3c953))
+
 ## [0.7.1](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.0...v0.7.1) (2025-01-23)
 
 

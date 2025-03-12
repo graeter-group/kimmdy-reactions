@@ -23,6 +23,7 @@ pip install kimmdy-reactions
 
 ## Making your own
 
-* Implement your reaction as a subclass of `kimmdy.reaction.Reaction`
-* Register your Reaction class in the  **[options.entry_points]** section in the setup.cfg. The name you give here must match the entry in the config.yml for Kimmdy!
+- Implement your reaction as a subclass of `kimmdy.reaction.Reaction`
+- Register your Reaction class in the **[options.entry_points]** section in the setup.cfg.
+  The name you give here must match the entry in the config.yml for Kimmdy!
 

@@ -12,6 +12,8 @@
 
 ### DummyReaction { #dummyreaction.reaction.DummyReaction }
 
-`reaction.DummyReaction()`
+```python
+reaction.DummyReaction()
+```
 
 Dummy reaction, returns empty RecipeCollection
