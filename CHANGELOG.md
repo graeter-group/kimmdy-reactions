@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.0](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.4...v1.0.0) (2025-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* use cached force and distance information for bonds
+* default to check_bound for breaking bonds
+* add deprecation notice to itp and edis config
+
+### Features
+
+* add deprecation notice to itp and edis config ([614be10](https://github.com/graeter-group/kimmdy-reactions/commit/614be10a52d8282ad52f5023cfc66baa90f57c6e))
+* default to check_bound for breaking bonds ([62afdad](https://github.com/graeter-group/kimmdy-reactions/commit/62afdad173bc0a87a0dfe3b0777187df184608a3))
+* use cached force and distance information for bonds ([1ea9756](https://github.com/graeter-group/kimmdy-reactions/commit/1ea97566b31d7865ee7850cb3f21078395b2bad0))
+
+
+### Bug Fixes
+
+* add nojekyll ([5897841](https://github.com/graeter-group/kimmdy-reactions/commit/58978415895123ca343db9bbcc6355527218e85e))
+
 ## [0.7.4](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.3...v0.7.4) (2025-03-06)
 
 
