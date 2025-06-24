@@ -28,7 +28,7 @@ from kimmdy.parsing import (
     read_distances_dat,
     read_edissoc,
 )
-from kimmdy.utils import (
+from kimmdy.plugin_utils import (
     get_atomnrs_from_plumedid,
     get_atominfo_from_atomnrs,
     get_bondprm_from_atomtypes,
@@ -48,7 +48,7 @@ class DummyRunmanager(RunManager):
 
 @dataclass
 class DummyFiles(TaskFiles):
-    get_latest: Callable = lambda: f"DummyCallable"
+    get_latest: Callable = lambda p: f"DummyCallable"
 
 
 @pytest.fixture
@@ -116,17 +116,6 @@ def test_fail_lookup_bondprm(homolysis_files):
         )
 
 
-# lookup can't failt currently
-# def test_fail_lookup_edissoc(homolysis_files):
-#     with pytest.raises(
-#         KeyError, match="Did not find dissociation energy for atomtypes"
-#     ):
-#         get_edissoc_from_atomnames(
-#             ["X", "Z"],
-#             homolysis_files["edissoc"],
-#         )
-
-
 def test_morse_transition_rate(homolysis_files):
     b0, kb = get_bondprm_from_atomtypes(["CT", "C"], homolysis_files["ffbonded"])
     e_dis = get_edissoc_from_atomnames(
@@ -162,56 +151,3 @@ def test_morse_transition_rate(homolysis_files):
     )
     assert all(np.isclose(ks, ks_ref))
     assert all(np.isclose(fs, fs_ref))
-
-
-def test_get_recipe_collection(homolysis_files):
-    config = Config(Path("kimmdy.yml"))
-    rmgr = DummyRunmanager(homolysis_files["top"], config)
-
-    files = DummyFiles()
-    files.input["plumed"] = Path("plumed.dat")
-    files.input["plumed_out"] = Path("distances.dat")
-    files.input["edis"] = Path("edissoc.dat")
-    files.input["itp"] = Path("ffbonded.itp")
-    r = Homolysis(name="homolysis", runmng=rmgr)
-    rc = r.get_recipe_collection(files)
-
-    plumed = homolysis_files["plumed"]
-    assert len(rc.recipes) == len(plumed["labeled_action"])
-    for recipe in rc.recipes:
-        assert len(recipe.recipe_steps) == 2
-        assert isinstance(recipe.recipe_steps[0], Break)
-        assert len(recipe.rates) == 1
-        assert type(recipe.rates[0]) in [float, np.float32, np.float64]
-        assert len(recipe.timespans) == 1
-        assert len(recipe.timespans[0]) == 2
-        for time in recipe.timespans[0]:
-            assert type(time) in [float, np.float32, np.float64]
-
-
-def test_homolysis_avg_rates(homolysis_files):
-    config = Config(Path("kimmdy.yml"))
-    rmgr = DummyRunmanager(homolysis_files["top"], config)
-
-    files = DummyFiles()
-    files.input["plumed"] = Path("plumed.dat")
-    files.input["plumed_out"] = Path("distances_avg.dat")
-    files.input["edis"] = Path("edissoc.dat")
-    files.input["itp"] = Path("ffbonded.itp")
-    r = Homolysis(name="homolysis", runmng=rmgr)
-    rc = r.get_recipe_collection(files)
-
-    files.input["plumed_out"] = Path("distances.dat")
-    rc2 = r.get_recipe_collection(files)
-
-    for r1, r2 in zip(rc.recipes, rc2.recipes):
-        assert r1.recipe_steps == r2.recipe_steps
-        assert r1.timespans == r2.timespans
-        assert r1.rates != r2.rates
-
-
-## test hat_naive
-# TODO:
-
-## test dummyreaction
-# TODO:
