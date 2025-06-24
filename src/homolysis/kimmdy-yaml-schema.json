@@ -26,8 +26,9 @@
     "check_bound": {
       "type": "boolean",
       "pytype": "bool",
-      "description": "Check the topology for bonds between plumed atom pairs",
-      "default": false
+      "description": "Check the topology for bonds between plumed atom pairs and only attempt to break them if they are actually bonded.",
+      "default": true
+    },
     },
     "arrhenius_equation": {
       "title": "arrhenius_equation",
