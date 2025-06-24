@@ -6,16 +6,15 @@
   "additionalProperties": false,
   "properties": {
     "edis": {
-      "type": "string",
-      "pytype": "Path",
-      "description": "Dissociation energies data file",
-      "default": "edissoc.dat"
+      "title": "edis",
+      "deprecated": true,
+      "description": "Dissociation energies data file now lives in the kimmdy root config as `config.edissoc`"
     },
     "itp": {
-      "type": "string",
-      "pytype": "Path",
-      "description": "Additional itp file with bonded parameters",
-      "default": "ffbonded.itp"
+      "title": "itp",
+      "deprecated": true,
+      "description": "Additional itp file with bonded parameters is no longer required and directly read from the forcefield."
+    },
     },
     "kmc": {
       "description": "KMC algorithm for this reaction.",
