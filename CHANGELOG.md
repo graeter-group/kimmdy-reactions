@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/graeter-group/kimmdy-reactions/compare/v1.1.0...v1.1.1) (2025-08-11)
+
+
+### Bug Fixes
+
+* license is gpl ([#26](https://github.com/graeter-group/kimmdy-reactions/issues/26)) ([7b0b82c](https://github.com/graeter-group/kimmdy-reactions/commit/7b0b82cd247ff3a70b4310bfe6f1408a2120e446))
+
 ## [1.1.0](https://github.com/graeter-group/kimmdy-reactions/compare/v1.0.0...v1.1.0) (2025-08-11)
 
 
