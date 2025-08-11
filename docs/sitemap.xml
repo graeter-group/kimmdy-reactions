@@ -2,42 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://graeter-group.github.io/kimmdy-reactions/config.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.DummyReaction.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/index.html</loc>
-    <lastmod>2025-06-24T13:31:49.088Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.NaiveHAT.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/homolysis.reaction.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/index.html</loc>
-    <lastmod>2025-06-24T13:31:11.068Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.Homolysis.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
-  </url>
-  <url>
-    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/hat_naive.reaction.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
   </url>
   <url>
     <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/index.html</loc>
+    <lastmod>2025-08-11T10:54:46.661Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/hat_naive.reaction.html</loc>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/homolysis.reaction.html</loc>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/index.html</loc>
+    <lastmod>2025-08-11T10:54:05.321Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.DummyReaction.html</loc>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.Homolysis.html</loc>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
+  </url>
+  <url>
+    <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/reaction.NaiveHAT.html</loc>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
   </url>
   <url>
     <loc>http://graeter-group.github.io/kimmdy-reactions/_reference/dummyreaction.reaction.html</loc>
-    <lastmod>2025-06-24T13:31:11.063Z</lastmod>
+    <lastmod>2025-08-11T10:54:05.316Z</lastmod>
   </url>
 </urlset>

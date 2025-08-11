@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/graeter-group/kimmdy-reactions/compare/v1.0.0...v1.1.0) (2025-08-11)
+
+
+### Features
+
+* pyproject ([2e8f178](https://github.com/graeter-group/kimmdy-reactions/commit/2e8f1785185af35eba5efa3a76b3c5c3ffc5117e))
+
+
+### Bug Fixes
+
+* fix pyprject.toml ([f233844](https://github.com/graeter-group/kimmdy-reactions/commit/f233844a55dbb2386aeb55282a377467b41e2210))
+
 ## [1.0.0](https://github.com/graeter-group/kimmdy-reactions/compare/v0.7.4...v1.0.0) (2025-06-24)
 
 
