@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/graeter-group/kimmdy-reactions/compare/v1.1.1...v1.1.2) (2025-08-11)
+
+
+### Bug Fixes
+
+* **ci:** release permissions ([64fa1d5](https://github.com/graeter-group/kimmdy-reactions/commit/64fa1d5f6962d25882a3dae63642ee6629692536))
+
 ## [1.1.1](https://github.com/graeter-group/kimmdy-reactions/compare/v1.1.0...v1.1.1) (2025-08-11)
 
 
