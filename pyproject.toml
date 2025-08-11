@@ -7,7 +7,6 @@ name = "kimmdy-reactions"
 version = "1.0.0"
 license = {text = "MIT"}
 description = "Reaction template for KIMMDY"
-description-content-type = "text/markdown"
 authors = [{name = "Kai Riedmiller", email = "kai.riedmiller@h-its.org"}]
 classifiers = [
     "Programming Language :: Python :: 3",
