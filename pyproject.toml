@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kimmdy-reactions"
-version = "1.0.0"
+version = "1.1.0"
 license = {text = "MIT"}
 description = "Reaction template for KIMMDY"
 authors = [{name = "Kai Riedmiller", email = "kai.riedmiller@h-its.org"}]
