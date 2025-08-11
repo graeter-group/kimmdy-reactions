@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kimmdy-reactions"
+version = "1.0.0"
+license = {text = "MIT"}
+description = "Reaction template for KIMMDY"
+description-content-type = "text/markdown"
+authors = [{name = "Kai Riedmiller", email = "kai.riedmiller@h-its.org"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">= 3.9"
+dependencies = ["MDAnalysis"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.optional-dependencies]
+dev = [
+    "kimmdy",
+    "pytest",
+    "tox",
+    "black",
+    "hypothesis",
+    "jupyter",
+    "griffe >= 0.33, < 1.0.0",
+    "quartodoc",
+]
+
+[project.entry-points."kimmdy.reaction_plugins"]
+dummyreaction = "dummyreaction.reaction:DummyReaction"
+hat_naive = "hat_naive.reaction:NaiveHAT"
+homolysis = "homolysis.reaction:Homolysis"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.package-data]
+dummyreaction = ["*.json"]
+hat_naive = ["*.json"]
+homolysis = ["*.json"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
