@@ -34,6 +34,13 @@ reactions:
   homolysis: ...
 ```
 
+Homolysis rates are calculated from the mean bond distances and forces in the trajectory of the preceding MD run.
+The distances are calculated with MDAnalysis for all bonds of the topology with both atoms in `bond_selection`, minus the bonds excluded by `bond_exclude`.
+Bonds broken by earlier reactions are no longer part of the topology and are therefore not monitored.
+The number of samples is set by the output frequency of the selected `trajectory` in the mdp file (`nstxout-compressed` for xtc, `nstxout` for trr).
+xtc files are written with reduced precision (`compressed-x-precision`, 0.001 nm by default); use `trajectory: trr` if full precision is needed.
+PLUMED and a `plumed.dat` file are no longer required.
+
 ```{python}
 #| echo: false
 #| output: asis
