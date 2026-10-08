@@ -18,10 +18,32 @@
     "dt_distances": {
       "title": "dt_distances",
       "type": "number",
-      "description": "Stepsize in ps for reading distances from the plumed distances.dat file. 0 Means use every frame in the file.",
+      "description": "Minimum time in ps between trajectory frames used for calculating bond distances. 0 means use every frame.",
       "pytype": "float",
       "minimum": 0,
       "default": 0
+    },
+    "trajectory": {
+      "title": "trajectory",
+      "type": "string",
+      "description": "Trajectory used for calculating bond distances. `xtc` files are written more often but with lower precision (`compressed-x-precision`) and may only contain the `compressed-x-grps` group (System or Protein), `trr` files contain all atoms at full precision.",
+      "pytype": "str",
+      "enum": ["xtc", "trr"],
+      "default": "xtc"
+    },
+    "bond_selection": {
+      "title": "bond_selection",
+      "type": "string",
+      "description": "MDAnalysis selection string for atoms whose bonds are monitored for homolysis. Only bonds of the topology with both atoms in the selection are used, e.g. `backbone or resname LY2 LY3 L4Y L5Y LYX` to include crosslinks.",
+      "pytype": "str",
+      "default": "backbone"
+    },
+    "bond_exclude": {
+      "title": "bond_exclude",
+      "type": "string",
+      "description": "Space-separated atom names or bonds excluded from the monitored bonds. An atom name (e.g. `O`) excludes bonds with that atom, a trailing `*` (e.g. `H*`) excludes atom names starting with the prefix and two atom names joined by a hyphen (e.g. `C-N`) exclude bonds between those atoms.",
+      "pytype": "str",
+      "default": "C-N H* O*"
     },
     "b0_overwrite": {
       "title": "b0_overwrite",
@@ -57,7 +79,7 @@
     "check_bound": {
       "type": "boolean",
       "pytype": "bool",
-      "description": "Check the topology for bonds between plumed atom pairs and only attempt to break them if they are actually bonded.",
+      "description": "Check the topology for bonds between monitored atom pairs and only attempt to break them if they are actually bonded. Monitored bonds are taken from the current topology, so this only matters for bondstats read from a cache file.",
       "default": true
     },
     "use_morse": {

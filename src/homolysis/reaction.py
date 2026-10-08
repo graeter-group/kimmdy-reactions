@@ -3,16 +3,19 @@ from pathlib import Path
 import numpy as np
 from kimmdy.parsing import read_edissoc
 from kimmdy.plugin_utils import (
+    atom_nrs_from_selection,
     bondstats_from_csv,
     bondstats_to_csv,
     calculate_beta,
-    calculate_bondstats,
+    calculate_bondstats_from_trajectory,
     calculate_harmonic_forces,
     get_edissoc_from_atomnames,
     harmonic_rates_from_forces,
     harmonic_transition_rate,
+    load_trajectory_universe,
     morse_rates_from_forces,
     morse_transition_rate,
+    select_bonds,
 )
 from kimmdy.plugins import ReactionPlugin
 from kimmdy.recipe import Break, Recipe, RecipeCollection, Relax
@@ -29,14 +32,15 @@ class Homolysis(ReactionPlugin):
         self.logger = logger
         logger.debug("Getting recipe for reaction: homolysis")
 
-        xtc = files.input["xtc"]
-        trr = files.input["trr"]
-        if xtc is not None:
-            trj = xtc
-        elif trr is not None:
-            trj = trr
-        else:
-            m = "No xtc trr file found. The homolysis plugin requires a trajectory file."
+        trajectory_format = self.config.trajectory
+        trj = files.input[trajectory_format]
+        if trj is None:
+            other = "trr" if trajectory_format == "xtc" else "xtc"
+            m = (
+                f"No {trajectory_format} file found. The homolysis plugin requires "
+                f"a trajectory file. Set `trajectory: {other}` in the homolysis "
+                f"config to use the {other} file instead."
+            )
             logger.error(m)
             raise ValueError(m)
 
@@ -53,16 +57,44 @@ class Homolysis(ReactionPlugin):
 
         did_read_bondstats = self.use_cached_bondstats()
         if not did_read_bondstats:
-            plumed_out = files.input["plumed_out"]
-            plumed_in = files.input["plumed"]
-            if plumed_out is None or plumed_in is None:
-                m = f"External force not specified but no plumed file found"
+            structure = files.input["gro"]
+            if structure is None:
+                m = "No gro file found. The homolysis plugin requires a structure file matching the trajectory."
                 logger.error(m)
                 raise ValueError(m)
-            self.bondstats = calculate_bondstats(
+            # xtc files may only contain the compressed-x-grps group.
+            # NOTE: this lookup duplicates kimmdy-hat (kimmdy_hat/reaction.py)
+            # and could be merged into a shared util in the future.
+            compressed_group = None
+            mdp = self.runmng.mdps.get(md_instance)
+            if mdp is not None:
+                compressed_group = mdp.get("compressed-x-grps")
+            u = load_trajectory_universe(
+                structure=structure,
+                trajectory=trj,
+                compressed_group=compressed_group,
+            )
+            # bonds are taken from the current topology, so bonds broken
+            # in earlier reactions are no longer monitored
+            atom_nrs = atom_nrs_from_selection(u, self.config.bond_selection)
+            bonds = select_bonds(
                 top=top,
-                plumed_in=plumed_in,
-                plumed_out=plumed_out,
+                atom_nrs=atom_nrs,
+                exclude=self.config.bond_exclude.split(),
+            )
+            logger.info(
+                f"Calculating distances of {len(bonds)} bonds from {trj.name} "
+                f"with selection '{self.config.bond_selection}' excluding "
+                f"'{self.config.bond_exclude}'."
+            )
+            if not bonds:
+                logger.warning(
+                    "No bonds selected for homolysis. Check bond_selection and bond_exclude."
+                )
+            self.bondstats = calculate_bondstats_from_trajectory(
+                top=top,
+                u=u,
+                bonds=bonds,
                 dt=self.config.dt_distances,
                 edissoc_dat=files.input["edissoc.dat"],
             )

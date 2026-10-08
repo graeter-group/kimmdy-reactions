@@ -151,3 +151,81 @@ def test_morse_transition_rate(homolysis_files):
     )
     assert all(np.isclose(ks, ks_ref))
     assert all(np.isclose(fs, fs_ref))
+
+
+def _homolysis_from_trajectory(top: Topology, **options):
+    """Run the homolysis plugin on a protein-only xtc of npt.gro."""
+    import logging
+    from types import SimpleNamespace
+
+    import MDAnalysis as mda
+    from kimmdy.plugin_utils import SOL_RESNAMES
+    from kimmdy.runmanager import TimeInfo
+
+    structure = mda.Universe("npt.gro")
+    protein = structure.select_atoms(f"not resname {' '.join(SOL_RESNAMES)}")
+    with mda.Writer("prod.xtc", protein.n_atoms) as w:
+        for _ in range(2):
+            w.write(protein)
+
+    config = SimpleNamespace(
+        trajectory="xtc",
+        bond_selection="backbone",
+        bond_exclude="C-N H* O*",
+        dt_distances=0.0,
+        recompute_bondstats=True,
+        check_bound=True,
+        use_morse=True,
+        b0_overwrite=0.0,
+        f0_overwrite=0.0,
+        arrhenius_equation=SimpleNamespace(frequency_factor=0.288, temperature=300),
+    )
+    for k, v in options.items():
+        setattr(config, k, v)
+    runmng = SimpleNamespace(
+        config=SimpleNamespace(reactions=SimpleNamespace(homolysis=config)),
+        top=top,
+        timeinfos={
+            "prod": TimeInfo(nsteps=1000, dt=0.002, trr_nst=100, xtc_nst=100, t_max=2.0)
+        },
+        mdps={"prod": {"compressed-x-grps": "Protein"}},
+    )
+    files = SimpleNamespace(
+        logger=logging.getLogger("test_homolysis"),
+        input={
+            "xtc": Path("prod.xtc"),
+            "trr": None,
+            "gro": Path("npt.gro"),
+            "edissoc.dat": Path("edissoc.dat"),
+        },
+    )
+    rc = Homolysis("homolysis", runmng).get_recipe_collection(files)
+    bonds = set()
+    for recipe in rc.recipes:
+        step = recipe.recipe_steps[0]
+        assert isinstance(step, Break)
+        bonds.add(tuple(sorted((step.atom_id_1, step.atom_id_2), key=int)))
+    return bonds
+
+
+def test_homolysis_bonds_from_trajectory_match_plumed(homolysis_files):
+    from kimmdy.plugin_utils import read_plumed_input
+
+    plumed_bonds = set(read_plumed_input(Path("plumed.dat")).keys())
+    bonds = _homolysis_from_trajectory(homolysis_files["top"], bond_exclude="H* O*")
+    assert bonds == plumed_bonds
+
+
+def test_homolysis_does_not_monitor_broken_bonds(homolysis_files):
+    top = homolysis_files["top"]
+    bonds = _homolysis_from_trajectory(top)
+    broken = sorted(bonds, key=lambda b: int(b[0]))[0]
+    top.break_bond(broken)
+    bonds_after = _homolysis_from_trajectory(top)
+    assert broken not in bonds_after
+    assert bonds_after == bonds - {broken}
+
+
+def test_homolysis_requires_selected_trajectory(homolysis_files):
+    with pytest.raises(ValueError, match="trajectory: xtc"):
+        _homolysis_from_trajectory(homolysis_files["top"], trajectory="trr")
