@@ -22,7 +22,7 @@ import numpy as np
 from homolysis.reaction import Homolysis
 from kimmdy.plugins import discover_plugins
 from kimmdy.config import Config
-from kimmdy.recipe import Break
+from kimmdy.recipe import Break, RecipeCollection, Relax
 from kimmdy.topology.topology import Topology
 from kimmdy.parsing import (
     Plumed_dict,
@@ -219,7 +219,7 @@ def test_morse_transition_rate(homolysis_files):
     assert all(np.isclose(fs, fs_ref))
 
 
-def _homolysis_from_trajectory(top: Topology, **options):
+def _run_homolysis(top: Topology, **options) -> RecipeCollection:
     """Run the homolysis plugin on a protein-only xtc of npt.gro."""
     import logging
     from types import SimpleNamespace
@@ -265,13 +265,27 @@ def _homolysis_from_trajectory(top: Topology, **options):
             "edissoc.dat": Path("edissoc.dat"),
         },
     )
-    rc = Homolysis("homolysis", runmng).get_recipe_collection(files)
+    return Homolysis("homolysis", runmng).get_recipe_collection(files)
+
+
+def _homolysis_from_trajectory(top: Topology, **options):
+    """Bonds selected by the homolysis plugin on a protein-only xtc of npt.gro."""
+    rc = _run_homolysis(top, **options)
     bonds = set()
     for recipe in rc.recipes:
         step = recipe.recipe_steps[0]
         assert isinstance(step, Break)
         bonds.add(tuple(sorted((step.atom_id_1, step.atom_id_2), key=int)))
     return bonds
+
+
+def _rates(rc: RecipeCollection) -> dict[tuple[str, str], float]:
+    """Rate of each broken bond in a homolysis RecipeCollection."""
+    rates = {}
+    for recipe in rc.recipes:
+        step = recipe.recipe_steps[0]
+        rates[(step.atom_id_1, step.atom_id_2)] = recipe.rates[0]
+    return rates
 
 
 def test_homolysis_bonds_from_trajectory_match_plumed(homolysis_files):
@@ -292,3 +306,68 @@ def test_homolysis_does_not_monitor_broken_bonds(homolysis_files):
 def test_homolysis_requires_selected_trajectory(homolysis_files):
     with pytest.raises(ValueError, match="trajectory: xtc"):
         _homolysis_from_trajectory(homolysis_files["top"], trajectory="trr")
+
+
+## homolysis rate calculation
+# rates can be tiny (~1e-60), so comparisons use atol=0
+@pytest.mark.parametrize("use_morse", [True, False])
+def test_homolysis_recipes(homolysis_files, use_morse):
+    rc = _run_homolysis(homolysis_files["top"], use_morse=use_morse)
+    assert len(rc.recipes) > 0
+    for recipe in rc.recipes:
+        assert len(recipe.recipe_steps) == 2
+        assert isinstance(recipe.recipe_steps[0], Break)
+        assert isinstance(recipe.recipe_steps[1], Relax)
+        assert recipe.timespans == [(0.0, 2.0)]
+        assert len(recipe.rates) == 1
+        assert np.isfinite(recipe.rates[0])
+        assert recipe.rates[0] >= 0
+
+
+def test_homolysis_morse_and_harmonic_rates_differ(homolysis_files):
+    top = homolysis_files["top"]
+    morse = _rates(_run_homolysis(top, use_morse=True))
+    harmonic = _rates(_run_homolysis(top, use_morse=False))
+    assert morse.keys() == harmonic.keys()
+    assert not np.allclose(list(morse.values()), [harmonic[k] for k in morse], atol=0)
+
+
+def test_homolysis_harmonic_force_fallback(homolysis_files):
+    """Bondstats without harmonic_f use the harmonic force at the mean distance."""
+    top = homolysis_files["top"]
+    with_harmonic_f = _rates(_run_homolysis(top, use_morse=False))
+    # drop the harmonic_f column from the cached bondstats
+    bondstats = Path(".kimmdy.bondstats")
+    lines = bondstats.read_text().splitlines()
+    bondstats.write_text("\n".join(",".join(l.split(",")[:7]) for l in lines))
+    fallback = _rates(_run_homolysis(top, use_morse=False, recompute_bondstats=False))
+    assert fallback.keys() == with_harmonic_f.keys()
+    for bond, rate in with_harmonic_f.items():
+        # mean_d is rounded in the csv, which changes the force slightly
+        assert np.isclose(fallback[bond], rate, rtol=1e-2, atol=0)
+
+
+@pytest.mark.parametrize("use_morse", [True, False])
+def test_homolysis_f0_overwrite_clamps_forces(homolysis_files, use_morse):
+    top = homolysis_files["top"]
+    default = _rates(_run_homolysis(top, use_morse=use_morse))
+    # f0 larger than any bond force sets all forces to 0
+    clamped = _rates(_run_homolysis(top, use_morse=use_morse, f0_overwrite=1e5))
+    clamped_more = _rates(_run_homolysis(top, use_morse=use_morse, f0_overwrite=1e7))
+    assert clamped == clamped_more
+    assert all(clamped[bond] <= rate for bond, rate in default.items())
+    assert any(clamped[bond] < rate for bond, rate in default.items())
+
+
+@pytest.mark.parametrize("use_morse", [True, False])
+def test_homolysis_b0_overwrite(homolysis_files, use_morse):
+    top = homolysis_files["top"]
+    # all selected bonds are longer than 0.1 nm and shorter than 0.2 nm
+    stretched = _rates(_run_homolysis(top, use_morse=use_morse, b0_overwrite=0.1))
+    compressed = _rates(_run_homolysis(top, use_morse=use_morse, b0_overwrite=0.2))
+    assert all(stretched[bond] > rate for bond, rate in compressed.items())
+    # forces are recomputed from b0, so f0_overwrite is ignored
+    with_f0 = _rates(
+        _run_homolysis(top, use_morse=use_morse, b0_overwrite=0.1, f0_overwrite=1e5)
+    )
+    assert with_f0 == stretched
