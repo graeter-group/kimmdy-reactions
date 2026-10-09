@@ -178,6 +178,7 @@ class Homolysis(ReactionPlugin):
                         k_f=kb,
                         dissociation_energy=edis,
                         frequency_factor=self.config.arrhenius_equation.frequency_factor,
+                        temperature=self.config.arrhenius_equation.temperature,
                     )
             else:
                 if self.config.f0_overwrite != 0.0:
