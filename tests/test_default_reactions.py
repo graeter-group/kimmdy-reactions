@@ -219,8 +219,13 @@ def test_morse_transition_rate(homolysis_files):
     assert all(np.isclose(fs, fs_ref))
 
 
-def _run_homolysis(top: Topology, **options) -> RecipeCollection:
-    """Run the homolysis plugin on a protein-only xtc of npt.gro."""
+def _run_homolysis(
+    top: Topology, trajectory: Path | None = None, **options
+) -> RecipeCollection:
+    """Run the homolysis plugin on a protein-only xtc.
+
+    Uses a 2-frame xtc of npt.gro if no trajectory is given.
+    """
     import logging
     from types import SimpleNamespace
 
@@ -228,11 +233,13 @@ def _run_homolysis(top: Topology, **options) -> RecipeCollection:
     from kimmdy.plugin_utils import SOL_RESNAMES
     from kimmdy.runmanager import TimeInfo
 
-    structure = mda.Universe("npt.gro")
-    protein = structure.select_atoms(f"not resname {' '.join(SOL_RESNAMES)}")
-    with mda.Writer("prod.xtc", protein.n_atoms) as w:
-        for _ in range(2):
-            w.write(protein)
+    if trajectory is None:
+        structure = mda.Universe("npt.gro")
+        protein = structure.select_atoms(f"not resname {' '.join(SOL_RESNAMES)}")
+        with mda.Writer("prod.xtc", protein.n_atoms) as w:
+            for _ in range(2):
+                w.write(protein)
+        trajectory = Path("prod.xtc")
 
     config = SimpleNamespace(
         trajectory="xtc",
@@ -252,14 +259,16 @@ def _run_homolysis(top: Topology, **options) -> RecipeCollection:
         config=SimpleNamespace(reactions=SimpleNamespace(homolysis=config)),
         top=top,
         timeinfos={
-            "prod": TimeInfo(nsteps=1000, dt=0.002, trr_nst=100, xtc_nst=100, t_max=2.0)
+            trajectory.stem: TimeInfo(
+                nsteps=1000, dt=0.002, trr_nst=100, xtc_nst=100, t_max=2.0
+            )
         },
-        mdps={"prod": {"compressed-x-grps": "Protein"}},
+        mdps={trajectory.stem: {"compressed-x-grps": "Protein"}},
     )
     files = SimpleNamespace(
         logger=logging.getLogger("test_homolysis"),
         input={
-            "xtc": Path("prod.xtc"),
+            "xtc": trajectory,
             "trr": None,
             "gro": Path("npt.gro"),
             "edissoc.dat": Path("edissoc.dat"),
@@ -371,3 +380,28 @@ def test_homolysis_b0_overwrite(homolysis_files, use_morse):
         _run_homolysis(top, use_morse=use_morse, b0_overwrite=0.1, f0_overwrite=1e5)
     )
     assert with_f0 == stretched
+
+
+@pytest.mark.parametrize("use_morse", [True, False])
+def test_homolysis_rates_match_plumed_reference(homolysis_files, use_morse):
+    """Rates from a trajectory match rates from PLUMED bondstats of the same frames.
+
+    prod_protein.xtc holds the first 2 ps (11 frames) of the production MD of a
+    triplehelix pulling run (protein only, precision 1e-6 nm).
+    bondstats_plumed.csv holds the bondstats of the PLUMED distances of the same
+    frames, computed with the PLUMED-based pipeline.
+    """
+    top = homolysis_files["top"]
+    trajectory = Path("prod_protein.xtc")
+    options = dict(use_morse=use_morse, bond_exclude="H* O*")
+    rates = _rates(_run_homolysis(top, trajectory=trajectory, **options))
+    shutil.copy("bondstats_plumed.csv", ".kimmdy.bondstats")
+    plumed = _rates(
+        _run_homolysis(top, trajectory=trajectory, recompute_bondstats=False, **options)
+    )
+    assert len(plumed) == 408
+    assert rates.keys() == plumed.keys()
+    for bond, rate in plumed.items():
+        # distances agree to ~1e-6 nm (precision of xtc and PLUMED output),
+        # which changes Morse rates by up to ~2.5 %
+        assert np.isclose(rates[bond], rate, rtol=5e-2, atol=0)
