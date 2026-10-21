@@ -245,7 +245,7 @@ def _run_homolysis(
         trajectory="xtc",
         bond_selection="backbone",
         bond_exclude="C-N H* O*",
-        dt_distances=0.0,
+        stride=1,
         recompute_bondstats=True,
         check_bound=True,
         use_morse=True,

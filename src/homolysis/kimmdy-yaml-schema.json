@@ -17,11 +17,16 @@
     },
     "dt_distances": {
       "title": "dt_distances",
-      "type": "number",
-      "description": "Minimum time in ps between trajectory frames used for calculating bond distances. 0 means use every frame.",
-      "pytype": "float",
-      "minimum": 0,
-      "default": 0
+      "deprecated": true,
+      "description": "Use `stride` instead. The value is ignored."
+    },
+    "stride": {
+      "title": "stride",
+      "type": "integer",
+      "description": "Use every stride-th frame of the trajectory for calculating bond distances. The time between frames is set by nstxout-compressed (xtc) or nstxout (trr). 1 means use every frame.",
+      "pytype": "int",
+      "minimum": 1,
+      "default": 1
     },
     "trajectory": {
       "title": "trajectory",

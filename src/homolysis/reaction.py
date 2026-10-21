@@ -51,8 +51,6 @@ class Homolysis(ReactionPlugin):
             m = f"No timings from mdp file found for {md_instance}"
             logger.error(m)
             raise ValueError(m)
-        self.xtc_trr_ratio = timings.trr_nst / timings.xtc_nst
-        self.dt = timings.dt
         top = self.runmng.top
 
         did_read_bondstats = self.use_cached_bondstats()
@@ -95,7 +93,7 @@ class Homolysis(ReactionPlugin):
                 top=top,
                 u=u,
                 bonds=bonds,
-                dt=self.config.dt_distances,
+                stride=self.config.stride,
                 edissoc_dat=files.input["edissoc.dat"],
             )
             self.cache_bondstats()
