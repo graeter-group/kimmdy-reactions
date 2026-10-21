@@ -33,6 +33,7 @@ from kimmdy.plugin_utils import (
     get_atomnrs_from_plumedid,
     get_atominfo_from_atomnrs,
     get_bondprm_from_atomtypes,
+    eyring_prefactor,
     get_edissoc_from_atomnames,
     morse_transition_rate,
 )
@@ -251,7 +252,9 @@ def _run_homolysis(
         use_morse=True,
         b0_overwrite=0.0,
         f0_overwrite=0.0,
-        arrhenius_equation=SimpleNamespace(frequency_factor=0.288, temperature=300),
+        eyring_equation=SimpleNamespace(
+            temperature=300, transmission_coefficient=0.046073
+        ),
     )
     for k, v in options.items():
         setattr(config, k, v)
@@ -405,3 +408,53 @@ def test_homolysis_rates_match_plumed_reference(homolysis_files, use_morse):
         # distances agree to ~1e-6 nm (precision of xtc and PLUMED output),
         # which changes Morse rates by up to ~2.5 %
         assert np.isclose(rates[bond], rate, rtol=5e-2, atol=0)
+
+
+def test_homolysis_arrhenius_equation_is_converted(homolysis_files, caplog):
+    from types import SimpleNamespace
+
+    top = homolysis_files["top"]
+    kappa = 0.288 / eyring_prefactor(300)
+    eyring = _rates(
+        _run_homolysis(
+            top,
+            eyring_equation=SimpleNamespace(
+                temperature=300, transmission_coefficient=kappa
+            ),
+        )
+    )
+    arrhenius = _rates(
+        _run_homolysis(
+            top,
+            arrhenius_equation=SimpleNamespace(frequency_factor=0.288, temperature=300),
+        )
+    )
+    assert "arrhenius_equation is deprecated" in caplog.text
+    assert arrhenius.keys() == eyring.keys()
+    for bond, rate in eyring.items():
+        assert np.isclose(arrhenius[bond], rate, rtol=1e-12, atol=0)
+
+
+def test_homolysis_eyring_default_matches_arrhenius_default():
+    # 0.288 1/ps was the default Arrhenius frequency factor at 300 K
+    assert eyring_prefactor(300, 0.046073) == pytest.approx(0.288, rel=1e-5)
+
+
+def test_homolysis_rates_scale_with_transmission_coefficient(homolysis_files):
+    from types import SimpleNamespace
+
+    top = homolysis_files["top"]
+    full, half = (
+        _rates(
+            _run_homolysis(
+                top,
+                eyring_equation=SimpleNamespace(
+                    temperature=300, transmission_coefficient=kappa
+                ),
+            )
+        )
+        for kappa in (1.0, 0.5)
+    )
+    assert full.keys() == half.keys()
+    for bond, rate in full.items():
+        assert np.isclose(half[bond], 0.5 * rate, rtol=1e-12, atol=0)

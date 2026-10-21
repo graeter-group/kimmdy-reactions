@@ -9,6 +9,7 @@ from kimmdy.plugin_utils import (
     calculate_beta,
     calculate_bondstats_from_trajectory,
     calculate_harmonic_forces,
+    eyring_prefactor,
     get_edissoc_from_atomnames,
     harmonic_rates_from_forces,
     harmonic_transition_rate,
@@ -107,6 +108,7 @@ class Homolysis(ReactionPlugin):
         t0 = 0.0
         t1 = timings.t_max
 
+        temperature, prefactor = self.rate_parameters(logger)
         recipes = []
         for bondkey, stats in self.bondstats.items():
             ai = top.atoms[bondkey[0]]
@@ -165,8 +167,8 @@ class Homolysis(ReactionPlugin):
                         r_0=b0,
                         dissociation_energy=edis,
                         k_f=kb,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
+                        frequency_factor=prefactor,
+                        temperature=temperature,
                     )
                 else:
                     ks, fs = harmonic_transition_rate(
@@ -174,8 +176,8 @@ class Homolysis(ReactionPlugin):
                         r_0=b0,
                         k_f=kb,
                         dissociation_energy=edis,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
+                        frequency_factor=prefactor,
+                        temperature=temperature,
                     )
             else:
                 if self.config.f0_overwrite != 0.0:
@@ -191,16 +193,16 @@ class Homolysis(ReactionPlugin):
                         b0=b0,
                         edis=edis,
                         beta=beta,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
+                        frequency_factor=prefactor,
+                        temperature=temperature,
                     )
                 else:
                     k = harmonic_rates_from_forces(
                         fs=fs,
                         edis=edis,
                         kb=kb,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
+                        frequency_factor=prefactor,
+                        temperature=temperature,
                     )
                 ks = list(k)
 
@@ -216,6 +218,32 @@ class Homolysis(ReactionPlugin):
             )
 
         return RecipeCollection(recipes)
+
+    def rate_parameters(self, logger) -> tuple[float, float]:
+        """Temperature in K and prefactor in 1/ps of the Eyring equation.
+
+        A deprecated `arrhenius_equation` is converted to the Eyring equation
+        with the transmission coefficient reproducing its frequency factor.
+        """
+        arrhenius = getattr(self.config, "arrhenius_equation", None)
+        if arrhenius is not None:
+            temperature = arrhenius.temperature
+            prefactor = arrhenius.frequency_factor
+            kappa = prefactor / eyring_prefactor(temperature)
+            logger.warning(
+                "arrhenius_equation is deprecated, use eyring_equation instead. "
+                f"Converting it to temperature={temperature:g} K and "
+                f"transmission_coefficient={kappa:.4g}."
+            )
+        else:
+            eyring = self.config.eyring_equation
+            temperature = eyring.temperature
+            prefactor = eyring_prefactor(temperature, eyring.transmission_coefficient)
+        logger.info(
+            f"Using Eyring equation with temperature={temperature:g} K and "
+            f"prefactor={prefactor:.4g} 1/ps."
+        )
+        return temperature, prefactor
 
     def use_cached_bondstats(self) -> bool:
         if self.config.recompute_bondstats:

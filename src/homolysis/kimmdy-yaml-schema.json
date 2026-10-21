@@ -93,24 +93,46 @@
       "description": "Calculate transition rates using a morse potential (the default). If set to `false`, a harmonic potential is used instead.",
       "default": true
     },
+    "eyring_equation": {
+      "title": "eyring_equation",
+      "type": "object",
+      "description": "Parameters of the Eyring equation k = kappa * kB * T / h * exp(-dV / (R * T)) converting the force-lowered barrier dV into a rate.",
+      "properties": {
+        "temperature": {
+          "type": "number",
+          "description": "Temperature in K.",
+          "pytype": "float",
+          "exclusiveMinimum": 0,
+          "default": 300
+        },
+        "transmission_coefficient": {
+          "type": "number",
+          "description": "Dimensionless transmission coefficient kappa. The default reproduces the earlier Arrhenius frequency factor of 0.288 1/ps at 300 K.",
+          "pytype": "float",
+          "minimum": 0,
+          "default": 0.046073
+        }
+      },
+      "required": [ "temperature", "transmission_coefficient" ],
+      "additionalProperties": false
+    },
     "arrhenius_equation": {
       "title": "arrhenius_equation",
       "type": "object",
-      "description": "For setting values in the arrhenius equation",
+      "deprecated": true,
+      "description": "Use eyring_equation instead. Both values must be given. The frequency factor A is converted to transmission_coefficient = A * h / (kB * T) and overrides eyring_equation. The earlier default behavior is reproduced with frequency_factor 0.288 and temperature 300, which is equivalent to the eyring_equation defaults.",
       "properties": {
         "frequency_factor": {
           "type": "number",
-          "description": "Frequency factor",
+          "description": "Frequency factor in 1/ps. Use 0.288 for the earlier default.",
           "pytype": "float",
-          "minimum": 0,
-          "default": 0.288
+          "minimum": 0
         },
         "temperature": {
           "type": "number",
-          "description": "Temperature",
+          "description": "Temperature in K. Use 300 for the earlier default.",
           "pytype": "float",
-          "minimum": 0,
-          "default": 300
+          "exclusiveMinimum": 0
         }
       },
       "required": [ "frequency_factor", "temperature" ],
