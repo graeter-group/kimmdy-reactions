@@ -37,9 +37,13 @@ reactions:
 Homolysis rates are calculated from the mean bond distances and forces in the trajectory of the preceding MD run.
 The distances are calculated with MDAnalysis for all bonds of the topology with both atoms in `bond_selection`, minus the bonds excluded by `bond_exclude`.
 Bonds broken by earlier reactions are no longer part of the topology and are therefore not monitored.
-The number of samples is set by the output frequency of the selected `trajectory` in the mdp file (`nstxout-compressed` for xtc, `nstxout` for trr).
+The number of samples is set by the output frequency of the selected `trajectory` in the mdp file (`nstxout-compressed` for xtc, `nstxout` for trr) and by `stride`, which uses only every stride-th frame.
 xtc files are written with reduced precision (`compressed-x-precision`, 0.001 nm by default); use `trajectory: trr` if full precision is needed.
 PLUMED and a `plumed.dat` file are no longer required.
+
+Rates are calculated with the Eyring equation from the barrier of the Morse (or harmonic) potential lowered by the mean bond force.
+The default `eyring_equation.transmission_coefficient` reproduces the earlier Arrhenius frequency factor of 0.288 1/ps at 300 K.
+The deprecated `arrhenius_equation` is still accepted and converted.
 
 ```{python}
 #| echo: false
