@@ -84,8 +84,8 @@
     "check_bound": {
       "type": "boolean",
       "pytype": "bool",
-      "description": "Check the topology for bonds between monitored atom pairs and only attempt to break them if they are actually bonded. Monitored bonds are taken from the current topology, so this only matters for bondstats read from a cache file.",
-      "default": true
+      "description": "Check the topology for bonds between monitored atom pairs and only attempt to break them if they are actually bonded. Monitored bonds are taken from the current topology, so this only matters for bondstats read from a cache file (`recompute_bondstats: false`) that may contain bonds broken since.",
+      "default": false
     },
     "use_morse": {
       "type": "boolean",

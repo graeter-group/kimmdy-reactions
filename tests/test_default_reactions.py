@@ -247,7 +247,7 @@ def _run_homolysis(
         bond_exclude="C-N H* O*",
         stride=1,
         recompute_bondstats=True,
-        check_bound=True,
+        check_bound=False,
         use_morse=True,
         b0_overwrite=0.0,
         f0_overwrite=0.0,

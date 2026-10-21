@@ -111,11 +111,10 @@ class Homolysis(ReactionPlugin):
         for bondkey, stats in self.bondstats.items():
             ai = top.atoms[bondkey[0]]
             aj = top.atoms[bondkey[1]]
+            if self.config.check_bound and aj.nr not in ai.bound_to_nrs:
+                continue
             typekey = (ai.type, aj.type)
             bondtype = top.ff.bondtypes.get(typekey)
-            if self.config.check_bound:
-                if not aj.nr in ai.bound_to_nrs:
-                    continue
             if bondtype is None:
                 typekey = (aj.type, ai.type)
                 bondtype = top.ff.bondtypes.get(typekey)
