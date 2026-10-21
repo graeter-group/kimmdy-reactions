@@ -221,7 +221,7 @@ def test_morse_transition_rate(homolysis_files):
 
 
 def _run_homolysis(
-    top: Topology, trajectory: Path | None = None, **options
+    top: Topology, trajectory_file: Path | None = None, **options
 ) -> RecipeCollection:
     """Run the homolysis plugin on a protein-only xtc.
 
@@ -234,13 +234,13 @@ def _run_homolysis(
     from kimmdy.plugin_utils import SOL_RESNAMES
     from kimmdy.runmanager import TimeInfo
 
-    if trajectory is None:
+    if trajectory_file is None:
         structure = mda.Universe("npt.gro")
         protein = structure.select_atoms(f"not resname {' '.join(SOL_RESNAMES)}")
         with mda.Writer("prod.xtc", protein.n_atoms) as w:
             for _ in range(2):
                 w.write(protein)
-        trajectory = Path("prod.xtc")
+        trajectory_file = Path("prod.xtc")
 
     config = SimpleNamespace(
         trajectory="xtc",
@@ -262,16 +262,16 @@ def _run_homolysis(
         config=SimpleNamespace(reactions=SimpleNamespace(homolysis=config)),
         top=top,
         timeinfos={
-            trajectory.stem: TimeInfo(
+            trajectory_file.stem: TimeInfo(
                 nsteps=1000, dt=0.002, trr_nst=100, xtc_nst=100, t_max=2.0
             )
         },
-        mdps={trajectory.stem: {"compressed-x-grps": "Protein"}},
+        mdps={trajectory_file.stem: {"compressed-x-grps": "Protein"}},
     )
     files = SimpleNamespace(
         logger=logging.getLogger("test_homolysis"),
         input={
-            "xtc": trajectory,
+            "xtc": trajectory_file,
             "trr": None,
             "gro": Path("npt.gro"),
             "edissoc.dat": Path("edissoc.dat"),
@@ -395,12 +395,14 @@ def test_homolysis_rates_match_plumed_reference(homolysis_files, use_morse):
     frames, computed with the PLUMED-based pipeline.
     """
     top = homolysis_files["top"]
-    trajectory = Path("prod_protein.xtc")
+    trajectory_file = Path("prod_protein.xtc")
     options = dict(use_morse=use_morse, bond_exclude="H* O*")
-    rates = _rates(_run_homolysis(top, trajectory=trajectory, **options))
+    rates = _rates(_run_homolysis(top, trajectory_file=trajectory_file, **options))
     shutil.copy("bondstats_plumed.csv", ".kimmdy.bondstats")
     plumed = _rates(
-        _run_homolysis(top, trajectory=trajectory, recompute_bondstats=False, **options)
+        _run_homolysis(
+            top, trajectory_file=trajectory_file, recompute_bondstats=False, **options
+        )
     )
     assert len(plumed) == 408
     assert rates.keys() == plumed.keys()
@@ -410,9 +412,14 @@ def test_homolysis_rates_match_plumed_reference(homolysis_files, use_morse):
         assert np.isclose(rates[bond], rate, rtol=5e-2, atol=0)
 
 
-def test_homolysis_arrhenius_equation_is_converted(homolysis_files, caplog):
+def test_homolysis_arrhenius_equation_is_converted(
+    homolysis_files, caplog, monkeypatch
+):
     from types import SimpleNamespace
 
+    # earlier tests may have configured kimmdy logging (root level CRITICAL)
+    monkeypatch.setattr(logging.getLogger("test_homolysis"), "disabled", False)
+    caplog.set_level(logging.WARNING, logger="test_homolysis")
     top = homolysis_files["top"]
     kappa = 0.288 / eyring_prefactor(300)
     eyring = _rates(
