@@ -1,3 +1,4 @@
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -76,19 +77,34 @@ class Homolysis(ReactionPlugin):
             # bonds are taken from the current topology, so bonds broken
             # in earlier reactions are no longer monitored
             atom_nrs = atom_nrs_from_selection(u, self.config.bond_selection)
+            n_selected = len(select_bonds(top=top, atom_nrs=atom_nrs))
             bonds = select_bonds(
                 top=top,
                 atom_nrs=atom_nrs,
                 exclude=self.config.bond_exclude.split(),
             )
             logger.info(
-                f"Calculating distances of {len(bonds)} bonds from {trj.name} "
-                f"with selection '{self.config.bond_selection}' excluding "
-                f"'{self.config.bond_exclude}'."
+                f"bond_selection '{self.config.bond_selection}' matches "
+                f"{len(atom_nrs)} atoms with {n_selected} bonds, of which "
+                f"bond_exclude '{self.config.bond_exclude}' excludes "
+                f"{n_selected - len(bonds)}. Calculating distances of "
+                f"{len(bonds)} bonds from {trj.name}."
             )
-            if not bonds:
+            if not atom_nrs:
+                logger.warning(
+                    f"bond_selection '{self.config.bond_selection}' matches no atoms in {trj.name}."
+                )
+            elif not bonds:
                 logger.warning(
                     "No bonds selected for homolysis. Check bond_selection and bond_exclude."
+                )
+            else:
+                counts = Counter(
+                    f"{top.atoms[i].atom}-{top.atoms[j].atom}" for i, j in bonds
+                )
+                logger.info(
+                    "Monitored bonds by atom names: "
+                    + ", ".join(f"{k}: {n}" for k, n in counts.most_common())
                 )
             self.bondstats = calculate_bondstats_from_trajectory(
                 top=top,
@@ -253,9 +269,12 @@ class Homolysis(ReactionPlugin):
             self.logger.info(m)
             return False
 
-        m = f"bondstatsfile {self.bondstatsfile} found. Using cached bondstats."
-        self.logger.info(m)
         self.bondstats = bondstats_from_csv(self.bondstatsfile)
+        m = (
+            f"bondstatsfile {self.bondstatsfile} found. Using cached bondstats of "
+            f"{len(self.bondstats)} bonds; bond_selection and bond_exclude are not applied."
+        )
+        self.logger.info(m)
         return True
 
     def cache_bondstats(self) -> None:
