@@ -50,29 +50,6 @@
       "pytype": "str",
       "default": "C-N H* O*"
     },
-    "b0_overwrite": {
-      "title": "b0_overwrite",
-      "type": "number",
-      "description": "Global equilibrium bond length used as an offset for calculating bond forces.",
-      "pytype": "float",
-      "minimum": 0,
-      "default": 0
-    },
-    "f0_overwrite": {
-      "title": "f0_overwrite",
-      "type": "number",
-      "description": "Global equilibrium bond force used as an offset for calculating bond forces.",
-      "pytype": "float",
-      "minimum": 0,
-      "default": 0
-    },
-    "recompute_bondstats": {
-      "title": "recompute_bondstats",
-      "type": "boolean",
-      "description": "Recompute bondstats (mean distance and force) even if a .kimmdy.bondstats cache file is found.",
-      "pytype": "bool",
-      "default": false
-    },
     "kmc": {
       "title": "kmc",
       "description": "KMC algorithm for this reaction.",
@@ -137,8 +114,29 @@
       },
       "required": [ "frequency_factor", "temperature" ],
       "additionalProperties": false
+    },
+    "b0_overwrite": {
+      "title": "b0_overwrite",
+      "type": "number",
+      "description": "Offset in nm added to the force field b0 of all monitored bonds; positive values lower the bond forces. With an offset, forces are calculated at the mean bond distance instead of averaged over the trajectory frames (the same for harmonic bonds, an approximation for Morse bonds). Mainly useful for testing. 0 disables the offset.",
+      "pytype": "float",
+      "default": 0
+    },
+    "f0_overwrite": {
+      "title": "f0_overwrite",
+      "type": "number",
+      "description": "Force in kJ/mol/nm subtracted from the mean force of all monitored bonds before calculating rates; negative results are set to 0. Mainly useful for testing.",
+      "pytype": "float",
+      "minimum": 0,
+      "default": 0
+    },
+    "recompute_bondstats": {
+      "title": "recompute_bondstats",
+      "type": "boolean",
+      "description": "Recompute bondstats (mean distance and force) even if a .kimmdy.bondstats cache file is found.",
+      "pytype": "bool",
+      "default": false
     }
-  },
-  "required": [ "edis" ]
+  }
 }
 

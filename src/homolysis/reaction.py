@@ -9,14 +9,13 @@ from kimmdy.plugin_utils import (
     bondstats_to_csv,
     calculate_beta,
     calculate_bondstats_from_trajectory,
+    calculate_forces,
     calculate_harmonic_forces,
     eyring_prefactor,
     get_edissoc_from_atomnames,
     harmonic_rates_from_forces,
-    harmonic_transition_rate,
     load_trajectory_universe,
     morse_rates_from_forces,
-    morse_transition_rate,
     select_bonds,
 )
 from kimmdy.plugins import ReactionPlugin
@@ -124,6 +123,14 @@ class Homolysis(ReactionPlugin):
         t1 = timings.t_max
 
         temperature, prefactor = self.rate_parameters(logger)
+        overwrite = self.config.b0_overwrite != 0.0 or self.config.f0_overwrite != 0.0
+        if overwrite:
+            logger.warning(
+                "Overwriting bond forces with "
+                f"b0_overwrite={self.config.b0_overwrite} nm and "
+                f"f0_overwrite={self.config.f0_overwrite} kJ/mol/nm "
+                "(mainly for testing)."
+            )
         recipes = []
         if self.config.check_bound:
             unbound = []
@@ -149,85 +156,46 @@ class Homolysis(ReactionPlugin):
                 raise ValueError(m)
             b0 = float(bondtype.c0)
             kb = float(bondtype.c1)
-
-            if self.config.b0_overwrite != 0.0:
-                b0 = self.config.b0_overwrite
-
-            if edissoc is not None:
-                edis = get_edissoc_from_atomnames(
-                    atomnames=[ai.atom, aj.atom], edissoc=edissoc, residue=ai.residue
-                )
-            else:
-                m = f"Could not find dissociation energy for atoms with ids {ai.nr} and {aj.nr}. Using default."
-                logger.debug(m)
-                edis = 500
+            edis = get_edissoc_from_atomnames(
+                atomnames=[ai.atom, aj.atom], edissoc=edissoc, residue=ai.residue
+            )
+            beta = calculate_beta(kb=kb, edis=edis)
 
             # averaging forces works here because we typically have
             # one conformational state per calculation
-            dist = stats["mean_d"]
             if self.config.use_morse:
                 force = stats["mean_f"]
+            elif stats.get("harmonic_f") is not None:
+                force = stats["harmonic_f"]
             else:
-                # for harmonic bonds, we use the mean harmonic force
-                # which is the force at the mean distance
-                # since the harmonic force is linear
-                maybe_force = stats.get("harmonic_f")
-                if maybe_force is None:
-                    force: float = calculate_harmonic_forces(
-                        ds=np.array([dist]), b0=b0, k=kb
-                    )[0]
-                else:
-                    force = maybe_force
+                # harmonic forces are linear, so the force at the
+                # mean distance is the mean force
+                force = calculate_harmonic_forces(
+                    ds=np.array([stats["mean_d"]]), b0=b0, k=kb
+                )[0]
+            if overwrite:
+                force = self.overwrite_force(force, stats["mean_d"], b0, kb, edis, beta)
+            # set negative average forces to 0
+            force = max(force, 0)
 
-            beta = calculate_beta(kb=kb, edis=edis)
-
-            if self.config.b0_overwrite != 0.0:
-                # if b0 is overwritten, we need to recalculate the force
-                # and don't use it from the bondstats
-                if self.config.use_morse:
-                    ks, fs = morse_transition_rate(
-                        r_curr=[dist],
-                        r_0=b0,
-                        dissociation_energy=edis,
-                        k_f=kb,
-                        frequency_factor=prefactor,
-                        temperature=temperature,
-                    )
-                else:
-                    ks, fs = harmonic_transition_rate(
-                        r_curr=[dist],
-                        r_0=b0,
-                        k_f=kb,
-                        dissociation_energy=edis,
-                        frequency_factor=prefactor,
-                        temperature=temperature,
-                    )
+            fs = np.array([force])
+            if self.config.use_morse:
+                ks = morse_rates_from_forces(
+                    fs=fs,
+                    b0=b0,
+                    edis=edis,
+                    beta=beta,
+                    frequency_factor=prefactor,
+                    temperature=temperature,
+                )
             else:
-                if self.config.f0_overwrite != 0.0:
-                    force = force - self.config.f0_overwrite
-
-                # set negative average forces to 0
-                force = max(force, 0)
-
-                fs = np.asarray([force])
-                if self.config.use_morse:
-                    k = morse_rates_from_forces(
-                        fs=fs,
-                        b0=b0,
-                        edis=edis,
-                        beta=beta,
-                        frequency_factor=prefactor,
-                        temperature=temperature,
-                    )
-                else:
-                    k = harmonic_rates_from_forces(
-                        fs=fs,
-                        edis=edis,
-                        kb=kb,
-                        frequency_factor=prefactor,
-                        temperature=temperature,
-                    )
-                ks = list(k)
+                ks = harmonic_rates_from_forces(
+                    fs=fs,
+                    edis=edis,
+                    kb=kb,
+                    frequency_factor=prefactor,
+                    temperature=temperature,
+                )
 
             recipes.append(
                 Recipe(
@@ -235,12 +203,33 @@ class Homolysis(ReactionPlugin):
                         Break(atom_id_1=bondkey[0], atom_id_2=bondkey[1]),
                         Relax(),
                     ],
-                    rates=[*ks],
+                    rates=list(ks),
                     timespans=[(t0, t1)],
                 )
             )
 
         return RecipeCollection(recipes)
+
+    def overwrite_force(
+        self,
+        force: float,
+        mean_d: float,
+        b0: float,
+        kb: float,
+        edis: float,
+        beta: float,
+    ) -> float:
+        """Apply b0_overwrite and f0_overwrite (mainly for testing) to a bond force."""
+        if self.config.b0_overwrite != 0.0:
+            # bondstats forces belong to the force field b0, so with an
+            # offset the force is evaluated at the mean distance
+            ds = np.array([mean_d])
+            b0 = b0 + self.config.b0_overwrite
+            if self.config.use_morse:
+                force = calculate_forces(ds=ds, b0=b0, edis=edis, beta=beta)[0]
+            else:
+                force = calculate_harmonic_forces(ds=ds, b0=b0, k=kb)[0]
+        return force - self.config.f0_overwrite
 
     def rate_parameters(self, logger) -> tuple[float, float]:
         """Temperature in K and prefactor in 1/ps of the Eyring equation.
