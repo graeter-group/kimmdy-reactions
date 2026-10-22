@@ -125,11 +125,19 @@ class Homolysis(ReactionPlugin):
 
         temperature, prefactor = self.rate_parameters(logger)
         recipes = []
+        if self.config.check_bound:
+            unbound = []
+            for bondkey in self.bondstats:
+                if bondkey[1] not in top.atoms[bondkey[0]].bound_to_nrs:
+                    unbound.append(bondkey)
+            for bondkey in unbound:
+                del self.bondstats[bondkey]
+            logger.info(
+                f"check_bound: skipping {len(unbound)} bonds that are no longer bound."
+            )
         for bondkey, stats in self.bondstats.items():
             ai = top.atoms[bondkey[0]]
             aj = top.atoms[bondkey[1]]
-            if self.config.check_bound and aj.nr not in ai.bound_to_nrs:
-                continue
             typekey = (ai.type, aj.type)
             bondtype = top.ff.bondtypes.get(typekey)
             if bondtype is None:
