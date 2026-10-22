@@ -30,6 +30,7 @@ from kimmdy.parsing import (
     read_edissoc,
 )
 from kimmdy.plugin_utils import (
+    bondstats_from_csv,
     get_atomnrs_from_plumedid,
     get_atominfo_from_atomnrs,
     get_bondprm_from_atomtypes,
@@ -318,6 +319,23 @@ def test_homolysis_does_not_monitor_broken_bonds(homolysis_files):
 def test_homolysis_requires_selected_trajectory(homolysis_files):
     with pytest.raises(ValueError, match="No trr file found.*`nstxout` > 0"):
         _homolysis_from_trajectory(homolysis_files["top"], trajectory="trr")
+
+
+def test_homolysis_no_selected_bonds_returns_empty(homolysis_files, monkeypatch):
+    def fail(**kwargs):
+        raise AssertionError("trajectory analysed although no bonds are selected")
+
+    monkeypatch.setattr(
+        "homolysis.reaction.calculate_bondstats_from_trajectory", fail
+    )
+    top = homolysis_files["top"]
+    rc = _run_homolysis(top, bond_selection="resname XYZ")
+    assert rc.recipes == []
+    assert bondstats_from_csv(".kimmdy.bondstats") == {}
+
+    # the cached empty bondstats are used without loading the trajectory again
+    rc = _run_homolysis(top, bond_selection="resname XYZ", recompute_bondstats=False)
+    assert rc.recipes == []
 
 
 ## homolysis rate calculation

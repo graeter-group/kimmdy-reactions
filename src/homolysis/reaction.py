@@ -87,29 +87,24 @@ class Homolysis(ReactionPlugin):
                 atom_nrs=atom_nrs,
                 exclude=self.config.bond_exclude.split(),
             )
+            counts = Counter(
+                f"{top.atoms[i].atom}-{top.atoms[j].atom}" for i, j in bonds
+            )
             logger.info(
                 f"bond_selection '{self.config.bond_selection}' matches "
-                f"{len(atom_nrs)} atoms with {n_selected} bonds, of which "
-                f"bond_exclude '{self.config.bond_exclude}' excludes "
-                f"{n_selected - len(bonds)}. Calculating distances of "
-                f"{len(bonds)} bonds from {trj.name}."
+                f"{len(atom_nrs)} atoms with {n_selected} bonds, bond_exclude "
+                f"'{self.config.bond_exclude}' excludes {n_selected - len(bonds)}. "
+                f"Monitoring {len(bonds)} bonds: "
+                + ", ".join(f"{k}: {n}" for k, n in counts.most_common())
             )
-            if not atom_nrs:
+            if not bonds:
                 logger.warning(
-                    f"bond_selection '{self.config.bond_selection}' matches no atoms in {trj.name}."
+                    "No bonds selected for homolysis, returning no recipes. "
+                    "Check bond_selection and bond_exclude."
                 )
-            elif not bonds:
-                logger.warning(
-                    "No bonds selected for homolysis. Check bond_selection and bond_exclude."
-                )
-            else:
-                counts = Counter(
-                    f"{top.atoms[i].atom}-{top.atoms[j].atom}" for i, j in bonds
-                )
-                logger.info(
-                    "Monitored bonds by atom names: "
-                    + ", ".join(f"{k}: {n}" for k, n in counts.most_common())
-                )
+                self.bondstats = {}
+                self.cache_bondstats()
+                return RecipeCollection([])
             self.bondstats = calculate_bondstats_from_trajectory(
                 top=top,
                 u=u,
