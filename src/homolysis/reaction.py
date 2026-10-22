@@ -37,14 +37,18 @@ class Homolysis(ReactionPlugin):
         trajectory_format = self.config.trajectory
         trj = files.input[trajectory_format]
         if trj is None:
-            other = "trr" if trajectory_format == "xtc" else "xtc"
+            mdp_option = (
+                "nstxout-compressed" if trajectory_format == "xtc" else "nstxout"
+            )
             m = (
-                f"No {trajectory_format} file found. The homolysis plugin requires "
-                f"a trajectory file. Set `trajectory: {other}` in the homolysis "
-                f"config to use the {other} file instead."
+                f"No {trajectory_format} file found. The homolysis plugin computes "
+                f"bond distances from the trajectory selected with `trajectory` "
+                f"({trajectory_format}). Make sure the preceding MD writes it "
+                f"(`{mdp_option}` > 0 in the mdp file)."
             )
             logger.error(m)
             raise ValueError(m)
+        logger.info(f"Using trajectory {trj.parent.name}/{trj.name}")
 
         self.bondstatsfile = trj.with_name(".kimmdy.bondstats")
         md_instance = trj.stem

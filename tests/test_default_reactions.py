@@ -316,7 +316,7 @@ def test_homolysis_does_not_monitor_broken_bonds(homolysis_files):
 
 
 def test_homolysis_requires_selected_trajectory(homolysis_files):
-    with pytest.raises(ValueError, match="trajectory: xtc"):
+    with pytest.raises(ValueError, match="No trr file found.*`nstxout` > 0"):
         _homolysis_from_trajectory(homolysis_files["top"], trajectory="trr")
 
 
