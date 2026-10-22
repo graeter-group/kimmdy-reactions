@@ -44,9 +44,7 @@ discover_plugins()
 
 # backbone bonds of npt.gro as in its former plumed.dat
 # (backbone minus "H* O*")
-BACKBONE_BONDS = {
-    tuple(pair.split("-"))
-    for pair in """
+BACKBONE_BONDS = {tuple(pair.split("-")) for pair in """
     5-7 7-9 9-20 20-22 22-24 24-44 44-46 46-48 48-51 51-53 53-63 63-65 65-67 67-78
     78-80 80-82 82-84 84-87 87-89 89-99 99-101 101-103 103-105 105-118 118-120 120-122
     122-125 125-127 127-137 137-139 139-141 141-152 152-154 154-156 156-158 158-161
@@ -92,8 +90,7 @@ BACKBONE_BONDS = {
     1638-1640 1640-1651 1651-1653 1653-1655 1655-1657 1657-1660 1660-1662 1662-1664
     1664-1670 1670-1672 1672-1674 1674-1692 1692-1694 1694-1696 1696-1699 1699-1701
     1701-1703 1703-1711 1711-1713
-    """.split()
-}
+    """.split()}
 
 
 @dataclass
@@ -325,9 +322,7 @@ def test_homolysis_no_selected_bonds_returns_empty(homolysis_files, monkeypatch)
     def fail(**kwargs):
         raise AssertionError("trajectory analysed although no bonds are selected")
 
-    monkeypatch.setattr(
-        "homolysis.reaction.calculate_bondstats_from_trajectory", fail
-    )
+    monkeypatch.setattr("homolysis.reaction.calculate_bondstats_from_trajectory", fail)
     top = homolysis_files["top"]
     rc = _run_homolysis(top, bond_selection="resname XYZ")
     assert rc.recipes == []
