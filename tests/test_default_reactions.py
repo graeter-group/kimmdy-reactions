@@ -392,15 +392,15 @@ def test_homolysis_f0_overwrite_clamps_forces(homolysis_files, use_morse):
 @pytest.mark.parametrize("use_morse", [True, False])
 def test_homolysis_b0_overwrite(homolysis_files, use_morse):
     top = homolysis_files["top"]
-    # all selected bonds are longer than 0.1 nm and shorter than 0.2 nm
-    stretched = _rates(_run_homolysis(top, use_morse=use_morse, b0_overwrite=0.1))
-    compressed = _rates(_run_homolysis(top, use_morse=use_morse, b0_overwrite=0.2))
+    # b0_overwrite is an offset to the force field b0
+    stretched = _rates(_run_homolysis(top, use_morse=use_morse, b0_overwrite=-0.01))
+    compressed = _rates(_run_homolysis(top, use_morse=use_morse, b0_overwrite=0.01))
     assert all(stretched[bond] > rate for bond, rate in compressed.items())
-    # forces are recomputed from b0, so f0_overwrite is ignored
+    # f0_overwrite is applied on top of the b0 offset
     with_f0 = _rates(
-        _run_homolysis(top, use_morse=use_morse, b0_overwrite=0.1, f0_overwrite=1e5)
+        _run_homolysis(top, use_morse=use_morse, b0_overwrite=-0.01, f0_overwrite=1e5)
     )
-    assert with_f0 == stretched
+    assert all(with_f0[bond] < rate for bond, rate in stretched.items())
 
 
 @pytest.mark.parametrize("use_morse", [True, False])
