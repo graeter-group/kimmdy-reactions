@@ -1,18 +1,22 @@
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
 from kimmdy.parsing import read_edissoc
 from kimmdy.plugin_utils import (
+    atom_nrs_from_selection,
     bondstats_from_csv,
     bondstats_to_csv,
     calculate_beta,
-    calculate_bondstats,
+    calculate_bondstats_from_trajectory,
+    calculate_forces,
     calculate_harmonic_forces,
+    eyring_prefactor,
     get_edissoc_from_atomnames,
     harmonic_rates_from_forces,
-    harmonic_transition_rate,
+    load_trajectory_universe,
     morse_rates_from_forces,
-    morse_transition_rate,
+    select_bonds,
 )
 from kimmdy.plugins import ReactionPlugin
 from kimmdy.recipe import Break, Recipe, RecipeCollection, Relax
@@ -29,16 +33,21 @@ class Homolysis(ReactionPlugin):
         self.logger = logger
         logger.debug("Getting recipe for reaction: homolysis")
 
-        xtc = files.input["xtc"]
-        trr = files.input["trr"]
-        if xtc is not None:
-            trj = xtc
-        elif trr is not None:
-            trj = trr
-        else:
-            m = "No xtc trr file found. The homolysis plugin requires a trajectory file."
+        trajectory_format = self.config.trajectory
+        trj = files.input[trajectory_format]
+        if trj is None:
+            mdp_option = (
+                "nstxout-compressed" if trajectory_format == "xtc" else "nstxout"
+            )
+            m = (
+                f"No {trajectory_format} file found. The homolysis plugin computes "
+                f"bond distances from the trajectory selected with `trajectory` "
+                f"({trajectory_format}). Make sure the preceding MD writes it "
+                f"(`{mdp_option}` > 0 in the mdp file)."
+            )
             logger.error(m)
             raise ValueError(m)
+        logger.info(f"Using trajectory {trj.parent.name}/{trj.name}")
 
         self.bondstatsfile = trj.with_name(".kimmdy.bondstats")
         md_instance = trj.stem
@@ -47,23 +56,59 @@ class Homolysis(ReactionPlugin):
             m = f"No timings from mdp file found for {md_instance}"
             logger.error(m)
             raise ValueError(m)
-        self.xtc_trr_ratio = timings.trr_nst / timings.xtc_nst
-        self.dt = timings.dt
         top = self.runmng.top
 
         did_read_bondstats = self.use_cached_bondstats()
         if not did_read_bondstats:
-            plumed_out = files.input["plumed_out"]
-            plumed_in = files.input["plumed"]
-            if plumed_out is None or plumed_in is None:
-                m = f"External force not specified but no plumed file found"
+            structure = files.input["gro"]
+            if structure is None:
+                m = "No gro file found. The homolysis plugin requires a structure file matching the trajectory."
                 logger.error(m)
                 raise ValueError(m)
-            self.bondstats = calculate_bondstats(
+            # xtc files may only contain the compressed-x-grps group.
+            # NOTE: this lookup duplicates kimmdy-hat (kimmdy_hat/reaction.py)
+            # and could be merged into a shared util in the future.
+            compressed_group = None
+            mdp = self.runmng.mdps.get(md_instance)
+            if mdp is not None:
+                compressed_group = mdp.get("compressed-x-grps")
+            u = load_trajectory_universe(
+                structure=structure,
+                trajectory=trj,
+                compressed_group=compressed_group,
+            )
+            # bonds are taken from the current topology, so bonds broken
+            # in earlier reactions are no longer monitored
+            atom_nrs = atom_nrs_from_selection(u, self.config.bond_selection)
+            n_selected = len(select_bonds(top=top, atom_nrs=atom_nrs))
+            bonds = select_bonds(
                 top=top,
-                plumed_in=plumed_in,
-                plumed_out=plumed_out,
-                dt=self.config.dt_distances,
+                atom_nrs=atom_nrs,
+                exclude=self.config.bond_exclude.split(),
+            )
+            counts = Counter(
+                f"{top.atoms[i].atom}-{top.atoms[j].atom}" for i, j in bonds
+            )
+            logger.info(
+                f"bond_selection '{self.config.bond_selection}' matches "
+                f"{len(atom_nrs)} atoms with {n_selected} bonds, bond_exclude "
+                f"'{self.config.bond_exclude}' excludes {n_selected - len(bonds)}. "
+                f"Monitoring {len(bonds)} bonds: "
+                + ", ".join(f"{k}: {n}" for k, n in counts.most_common())
+            )
+            if not bonds:
+                logger.warning(
+                    "No bonds selected for homolysis, returning no recipes. "
+                    "Check bond_selection and bond_exclude."
+                )
+                self.bondstats = {}
+                self.cache_bondstats()
+                return RecipeCollection([])
+            self.bondstats = calculate_bondstats_from_trajectory(
+                top=top,
+                u=u,
+                bonds=bonds,
+                stride=self.config.stride,
                 edissoc_dat=files.input["edissoc.dat"],
             )
             self.cache_bondstats()
@@ -77,15 +122,31 @@ class Homolysis(ReactionPlugin):
         t0 = 0.0
         t1 = timings.t_max
 
+        temperature, prefactor = self.rate_parameters(logger)
+        overwrite = self.config.b0_overwrite != 0.0 or self.config.f0_overwrite != 0.0
+        if overwrite:
+            logger.warning(
+                "Overwriting bond forces with "
+                f"b0_overwrite={self.config.b0_overwrite} nm and "
+                f"f0_overwrite={self.config.f0_overwrite} kJ/mol/nm "
+                "(mainly for testing)."
+            )
         recipes = []
+        if self.config.check_bound:
+            unbound = []
+            for bondkey in self.bondstats:
+                if bondkey[1] not in top.atoms[bondkey[0]].bound_to_nrs:
+                    unbound.append(bondkey)
+            for bondkey in unbound:
+                del self.bondstats[bondkey]
+            logger.info(
+                f"check_bound: skipping {len(unbound)} bonds that are no longer bound."
+            )
         for bondkey, stats in self.bondstats.items():
             ai = top.atoms[bondkey[0]]
             aj = top.atoms[bondkey[1]]
             typekey = (ai.type, aj.type)
             bondtype = top.ff.bondtypes.get(typekey)
-            if self.config.check_bound:
-                if not aj.nr in ai.bound_to_nrs:
-                    continue
             if bondtype is None:
                 typekey = (aj.type, ai.type)
                 bondtype = top.ff.bondtypes.get(typekey)
@@ -95,84 +156,46 @@ class Homolysis(ReactionPlugin):
                 raise ValueError(m)
             b0 = float(bondtype.c0)
             kb = float(bondtype.c1)
-
-            if self.config.b0_overwrite != 0.0:
-                b0 = self.config.b0_overwrite
-
-            if edissoc is not None:
-                edis = get_edissoc_from_atomnames(
-                    atomnames=[ai.atom, aj.atom], edissoc=edissoc, residue=ai.residue
-                )
-            else:
-                m = f"Could not find dissociation energy for atoms with ids {ai.nr} and {aj.nr}. Using default."
-                logger.debug(m)
-                edis = 500
+            edis = get_edissoc_from_atomnames(
+                atomnames=[ai.atom, aj.atom], edissoc=edissoc, residue=ai.residue
+            )
+            beta = calculate_beta(kb=kb, edis=edis)
 
             # averaging forces works here because we typically have
             # one conformational state per calculation
-            dist = stats["mean_d"]
             if self.config.use_morse:
                 force = stats["mean_f"]
+            elif stats.get("harmonic_f") is not None:
+                force = stats["harmonic_f"]
             else:
-                # for harmonic bonds, we use the mean harmonic force
-                # which is the force at the mean distance
-                # since the harmonic force is linear
-                maybe_force = stats.get("harmonic_f")
-                if maybe_force is None:
-                    force: float = calculate_harmonic_forces(
-                        ds=np.array([dist]), b0=b0, k=kb
-                    )[0]
-                else:
-                    force = maybe_force
+                # harmonic forces are linear, so the force at the
+                # mean distance is the mean force
+                force = calculate_harmonic_forces(
+                    ds=np.array([stats["mean_d"]]), b0=b0, k=kb
+                )[0]
+            if overwrite:
+                force = self.overwrite_force(force, stats["mean_d"], b0, kb, edis, beta)
+            # set negative average forces to 0
+            force = max(force, 0)
 
-            beta = calculate_beta(kb=kb, edis=edis)
-
-            if self.config.b0_overwrite != 0.0:
-                # if b0 is overwritten, we need to recalculate the force
-                # and don't use it from the bondstats
-                if self.config.use_morse:
-                    ks, fs = morse_transition_rate(
-                        r_curr=[dist],
-                        r_0=b0,
-                        dissociation_energy=edis,
-                        k_f=kb,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
-                    )
-                else:
-                    ks, fs = harmonic_transition_rate(
-                        r_curr=[dist],
-                        r_0=b0,
-                        k_f=kb,
-                        dissociation_energy=edis,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                    )
+            fs = np.array([force])
+            if self.config.use_morse:
+                ks = morse_rates_from_forces(
+                    fs=fs,
+                    b0=b0,
+                    edis=edis,
+                    beta=beta,
+                    frequency_factor=prefactor,
+                    temperature=temperature,
+                )
             else:
-                if self.config.f0_overwrite != 0.0:
-                    force = force - self.config.f0_overwrite
-
-                # set negative average forces to 0
-                force = max(force, 0)
-
-                fs = np.asarray([force])
-                if self.config.use_morse:
-                    k = morse_rates_from_forces(
-                        fs=fs,
-                        b0=b0,
-                        edis=edis,
-                        beta=beta,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
-                    )
-                else:
-                    k = harmonic_rates_from_forces(
-                        fs=fs,
-                        edis=edis,
-                        kb=kb,
-                        frequency_factor=self.config.arrhenius_equation.frequency_factor,
-                        temperature=self.config.arrhenius_equation.temperature,
-                    )
-                ks = list(k)
+                ks = harmonic_rates_from_forces(
+                    fs=fs,
+                    edis=edis,
+                    kb=kb,
+                    frequency_factor=prefactor,
+                    temperature=temperature,
+                )
 
             recipes.append(
                 Recipe(
@@ -180,12 +203,59 @@ class Homolysis(ReactionPlugin):
                         Break(atom_id_1=bondkey[0], atom_id_2=bondkey[1]),
                         Relax(),
                     ],
-                    rates=[*ks],
+                    rates=list(ks),
                     timespans=[(t0, t1)],
                 )
             )
 
         return RecipeCollection(recipes)
+
+    def overwrite_force(
+        self,
+        force: float,
+        mean_d: float,
+        b0: float,
+        kb: float,
+        edis: float,
+        beta: float,
+    ) -> float:
+        """Apply b0_overwrite and f0_overwrite (mainly for testing) to a bond force."""
+        if self.config.b0_overwrite != 0.0:
+            # bondstats forces belong to the force field b0, so with an
+            # offset the force is evaluated at the mean distance
+            ds = np.array([mean_d])
+            b0 = b0 + self.config.b0_overwrite
+            if self.config.use_morse:
+                force = calculate_forces(ds=ds, b0=b0, edis=edis, beta=beta)[0]
+            else:
+                force = calculate_harmonic_forces(ds=ds, b0=b0, k=kb)[0]
+        return force - self.config.f0_overwrite
+
+    def rate_parameters(self, logger) -> tuple[float, float]:
+        """Temperature in K and prefactor in 1/ps of the Eyring equation.
+
+        A deprecated `arrhenius_equation` is converted to the Eyring equation
+        with the transmission coefficient reproducing its frequency factor.
+        """
+        arrhenius = getattr(self.config, "arrhenius_equation", None)
+        if arrhenius is not None:
+            temperature = arrhenius.temperature
+            prefactor = arrhenius.frequency_factor
+            kappa = prefactor / eyring_prefactor(temperature)
+            logger.warning(
+                "arrhenius_equation is deprecated, use eyring_equation instead. "
+                f"Converting it to temperature={temperature:g} K and "
+                f"transmission_coefficient={kappa:.4g}."
+            )
+        else:
+            eyring = self.config.eyring_equation
+            temperature = eyring.temperature
+            prefactor = eyring_prefactor(temperature, eyring.transmission_coefficient)
+        logger.info(
+            f"Using Eyring equation with temperature={temperature:g} K and "
+            f"prefactor={prefactor:.4g} 1/ps."
+        )
+        return temperature, prefactor
 
     def use_cached_bondstats(self) -> bool:
         if self.config.recompute_bondstats:
@@ -195,9 +265,16 @@ class Homolysis(ReactionPlugin):
             self.logger.info(m)
             return False
 
-        m = f"bondstatsfile {self.bondstatsfile} found. Using cached bondstats."
-        self.logger.info(m)
         self.bondstats = bondstats_from_csv(self.bondstatsfile)
+        m = (
+            f"bondstatsfile {self.bondstatsfile} found. Using cached bondstats of "
+            f"{len(self.bondstats)} bonds; current bond_selection, bond_exclude "
+            "and stride settings are not applied. If these settings changed, "
+            "or you want to replace cached PLUMED-based statistics with "
+            "trajectory-based statistics, set recompute_bondstats: true. "
+            "Check the intended bond selection and sampling settings first."
+        )
+        self.logger.warning(m)
         return True
 
     def cache_bondstats(self) -> None:

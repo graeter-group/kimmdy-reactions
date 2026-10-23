@@ -6,13 +6,12 @@ gmx_mdrun_flags: -maxh 24 -dlb yes -nt 8 -npme 0 -ntmpi 1
 top: 'topol.top'
 gro: 'npt.gro'
 ndx: 'index_backbone.ndx'
-plumed: 'plumed.dat'
+edissoc: 'edissoc.dat'
 mds:
   equilibrium:
     mdp: 'empty.mdp'
   prod:
     mdp: 'empty.mdp'
-    use_plumed: true
   relax:
     mdp: 'empty.mdp'
 changer:
@@ -21,9 +20,7 @@ changer:
   topology:
     parameterization: 'basic' 
 reactions:
-  homolysis:
-    edis: 'edissoc.dat'
-    itp: 'ffbonded.itp'
+  homolysis: {}
   dummyreaction: {}
 sequence:
   - equilibrium
