@@ -118,7 +118,7 @@
     "b0_overwrite": {
       "title": "b0_overwrite",
       "type": "number",
-      "description": "Offset in nm added to the force field b0 of all monitored bonds; positive values lower the bond forces. With an offset, forces are calculated at the mean bond distance instead of averaged over the trajectory frames (the same for harmonic bonds, an approximation for Morse bonds). Mainly useful for testing. 0 disables the offset.",
+      "description": "Offset in nm added to the force field b0 of all monitored bonds; positive values lower the bond forces. Up to version 1.1.2, a nonzero value replaced b0 instead of being added to it and f0_overwrite was ignored when it was set; review existing nonzero settings. With an offset, forces are calculated at the mean bond distance instead of averaged over the trajectory frames (the same for harmonic bonds, an approximation for Morse bonds). Mainly useful for testing. 0 disables the offset.",
       "pytype": "float",
       "default": 0
     },

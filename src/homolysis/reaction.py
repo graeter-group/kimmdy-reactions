@@ -268,9 +268,13 @@ class Homolysis(ReactionPlugin):
         self.bondstats = bondstats_from_csv(self.bondstatsfile)
         m = (
             f"bondstatsfile {self.bondstatsfile} found. Using cached bondstats of "
-            f"{len(self.bondstats)} bonds; bond_selection and bond_exclude are not applied."
+            f"{len(self.bondstats)} bonds; current bond_selection, bond_exclude "
+            "and stride settings are not applied. If these settings changed, "
+            "or you want to replace cached PLUMED-based statistics with "
+            "trajectory-based statistics, set recompute_bondstats: true. "
+            "Check the intended bond selection and sampling settings first."
         )
-        self.logger.info(m)
+        self.logger.warning(m)
         return True
 
     def cache_bondstats(self) -> None:
