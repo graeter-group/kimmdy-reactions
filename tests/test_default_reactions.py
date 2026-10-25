@@ -118,7 +118,7 @@ def homolysis_files(tmp_path: Path):
 
     top = Topology(read_top(Path("topol.top")))
     ffbonded = read_top(Path("ffbonded.itp"))
-    edissoc = read_edissoc(Path("edissoc.dat"))
+    edissoc = read_edissoc(Path("edissoc_kimmdy.dat"))
 
     files = {
         "top": top,
@@ -257,7 +257,10 @@ def _run_homolysis(
     for k, v in options.items():
         setattr(config, k, v)
     runmng = SimpleNamespace(
-        config=SimpleNamespace(reactions=SimpleNamespace(homolysis=config)),
+        config=SimpleNamespace(
+            reactions=SimpleNamespace(homolysis=config),
+            edissoc_kimmdy=Path("edissoc_kimmdy.dat"),
+        ),
         top=top,
         timeinfos={
             trajectory_file.stem: TimeInfo(
@@ -272,7 +275,6 @@ def _run_homolysis(
             "xtc": trajectory_file,
             "trr": None,
             "gro": Path("npt.gro"),
-            "edissoc.dat": Path("edissoc.dat"),
         },
     )
     return Homolysis("homolysis", runmng).get_recipe_collection(files)
@@ -478,3 +480,13 @@ def test_homolysis_rates_scale_with_transmission_coefficient(homolysis_files):
     assert full.keys() == half.keys()
     for bond, rate in full.items():
         assert np.isclose(half[bond], 0.5 * rate, rtol=1e-12, atol=0)
+
+
+def test_homolysis_requires_edissoc_kimmdy():
+    from types import SimpleNamespace
+
+    runmng = SimpleNamespace(
+        config=SimpleNamespace(reactions=SimpleNamespace(homolysis=SimpleNamespace()))
+    )
+    with pytest.raises(ValueError, match="edissoc_kimmdy"):
+        Homolysis("homolysis", runmng)

@@ -28,6 +28,12 @@ class Homolysis(ReactionPlugin):
     Implementation for time-varying rates
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not hasattr(self.runmng.config, "edissoc_kimmdy"):
+            m = "The homolysis plugin requires a file with dissociation energies defined in the kimmdy config as `edissoc_kimmdy`."
+            raise ValueError(m)
+
     def get_recipe_collection(self, files: TaskFiles):
         logger = files.logger
         self.logger = logger
@@ -109,16 +115,12 @@ class Homolysis(ReactionPlugin):
                 u=u,
                 bonds=bonds,
                 stride=self.config.stride,
-                edissoc_dat=files.input["edissoc.dat"],
+                edissoc_dat=self.runmng.config.edissoc_kimmdy,
             )
             self.cache_bondstats()
 
-        path_edissoc = files.input["edissoc.dat"]
-        if path_edissoc is None:
-            m = "edissoc.dat file not found. The homolysis plugin requires a file with dissociation energies defined in the kimmdy config as `edissoc`."
-            logger.error(m)
-            raise ValueError(m)
-        edissoc = read_edissoc(path_edissoc)
+        # existence is checked by the config, presence by __init__
+        edissoc = read_edissoc(self.runmng.config.edissoc_kimmdy)
         t0 = 0.0
         t1 = timings.t_max
 

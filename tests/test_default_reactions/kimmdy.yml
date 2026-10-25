@@ -6,7 +6,7 @@ gmx_mdrun_flags: -maxh 24 -dlb yes -nt 8 -npme 0 -ntmpi 1
 top: 'topol.top'
 gro: 'npt.gro'
 ndx: 'index_backbone.ndx'
-edissoc: 'edissoc.dat'
+edissoc_kimmdy: 'edissoc_kimmdy.dat'
 mds:
   equilibrium:
     mdp: 'empty.mdp'

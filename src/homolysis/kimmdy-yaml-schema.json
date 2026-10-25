@@ -8,7 +8,7 @@
     "edis": {
       "title": "edis",
       "deprecated": true,
-      "description": "Dissociation energies data file now lives in the kimmdy root config as `config.edissoc`"
+      "description": "Dissociation energies data file now lives in the kimmdy root config as `config.edissoc_kimmdy`"
     },
     "itp": {
       "title": "itp",
